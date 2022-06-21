@@ -1,0 +1,16 @@
+{
+  "name": "heroku-docker-nginx",
+  "description": "",
+  "keywords": ["nginx", "docker", "proxy"],
+  "env": {
+    "CLIENTSID": {
+        "description": "CLIENTSID",
+        "value": ""
+    },
+    "WSPATH": {
+        "description": "WebSocket Path",
+        "value": "/"
+    }
+  },
+  "stack": "container"
+}

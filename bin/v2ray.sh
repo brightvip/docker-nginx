@@ -99,7 +99,7 @@ EOF
  sed -e 's/serverName/v2raygun/' -e 's/serverPass/127.0.0.1:9302/' /usr/app/lib/nginx/upstream_server.conf.template > /usr/app/lib/v2ray/v2raygun.us
  cat /usr/app/lib/v2ray/v2raygun.us >> /etc/nginx/conf.d/upstream.conf
  sed -e 's:path:'"${WSPATH}gun"':' -e 's/proxyPass/grpc:\/\/v2raygun/' /usr/app/lib/nginx/grpc_proxy.conf.template > /usr/app/lib/v2ray/v2rayl.gun
- #sed -i '27 r /usr/app/lib/v2ray/v2rayl.gun' /etc/nginx/conf.d/default.conf
+ sed -i '27 r /usr/app/lib/v2ray/v2rayl.gun' /etc/nginx/conf.d/default.conf
  sed -e 's/v2rayport/9302/'  -e 's/v2rayprotocol/vless/' -e 's/v2listen/127.0.0.1/' -e 's:CLIENTSID:'"${CLIENTSID}"':'  -e 's:GUNSERVICENAME:'"$(echo $WSPATH | awk '{ string=substr($0,2); print string; }')gun"':' /usr/app/lib/v2ray/configgun.json.template > /usr/app/lib/v2ray/v2rayl.gun.json
  
 

@@ -1,4 +1,4 @@
-# docker-nginx
+## docker-nginx
 
 Barebones example of deploying
 [the official nginx Docker image](https://github.com/docker-library/docs/tree/master/nginx)

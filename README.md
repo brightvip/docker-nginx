@@ -10,6 +10,7 @@ Fire up an nginx proxy on [Heroku](https://www.heroku.com/) with a single click:
 
 [![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template?template=https://github.com/brightvip/heroku-docker-nginx&envs=PORT,WSPATH,CLIENTSID&PORTDefault=443)
 
 ## cloudflare 
 `workers`

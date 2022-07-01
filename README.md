@@ -14,8 +14,6 @@ Fire up an nginx on [Railway](https://railway.app/) with a single click:
 
 [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template?template=https://github.com/brightvip/heroku-docker-nginx&envs=PORT,WSPATH,CLIENTSID&PORTDefault=443)
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template?envs=PORT,WSPATH,CLIENTSID&PORTDefault=443)
-
 ## cloudflare 
 `workers`
 

@@ -16,9 +16,8 @@ Fire up an nginx on [Railway](https://railway.app/) with a single click:
 
 This example shows how to leverage [Okteto](https://github.com/okteto/okteto) to develop a  Sample App directly in Okteto.
 
-[![Develop on Okteto](https://okteto.com/develop-okteto.svg)](https://cloud.okteto.com/deploy?repository=https://github.com/brightvip/heroku-docker-nginx&vars=[{"name":"PORT","value":"8080"},{"name":"CLIENTSID","value":""},{"name":"WSPATH","value":""}])
+[![Develop on Okteto](https://okteto.com/develop-okteto.svg)](https://cloud.okteto.com/deploy?repository=https://github.com/brightvip/heroku-docker-nginx&vars=[{"name":"PORT","value":"8080"},{"name":"CLIENTSID"},{"name":"WSPATH"}])
 
-> **_NOTE:_**  The note content.
 
 ## cloudflare 
 `workers`

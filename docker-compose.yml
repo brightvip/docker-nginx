@@ -3,6 +3,10 @@ version: "3"
 services:
   docker-nginx:
     build: .
+    environment:
+      - PORT=${PORT:8080}
+      - CLIENTSID=${CLIENTSID}
+      - WSPATH=${WSPATH}
     ports:
       - 8080:8080
   

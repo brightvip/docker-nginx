@@ -14,6 +14,10 @@ Fire up an nginx on [Railway](https://railway.app/) with a single click:
 
 [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template?template=https://github.com/brightvip/heroku-docker-nginx&envs=PORT,WSPATH,CLIENTSID&PORTDefault=443)
 
+This example shows how to leverage [Okteto](https://github.com/okteto/okteto) to develop a  Sample App directly in Okteto.
+
+[![Develop on Okteto](https://okteto.com/develop-okteto.svg)](https://cloud.okteto.com/deploy?repository=https://github.com/brightvip/heroku-docker-nginx)
+
 ## cloudflare 
 `workers`
 

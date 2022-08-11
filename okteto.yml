@@ -1,4 +1,0 @@
-name: docker-nginx
-command: bash
-forward:
-- 8080:8080

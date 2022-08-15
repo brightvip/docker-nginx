@@ -6,5 +6,5 @@ RUN apt-get update -y && apt upgrade -y && apt-get install -y curl bash unzip op
 COPY bin /usr/app/bin
 COPY lib /usr/app/lib
 
-CMD /bin/bash -c "cat /usr/app/bin/start.sh | tr -d '\r' > /usr/app/bin/startnew.sh && chmod +x  /usr/app/bin/startnew.sh && /usr/app/bin/startnew.sh" \
+CMD /bin/bash -c "cat /usr/app/bin/start.sh | tr -d '\r'  | sh" \
     && nginx -g 'daemon off;'

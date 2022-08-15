@@ -20,8 +20,8 @@ cat << EOF >/usr/app/lib/trojan-go/configws.json.template
   "ssl": {
     "verify": false,
     "verify_hostname": false,
-    "cert":"/usr/app/lib/trojan-go/server.crt",
-    "key":"/usr/app/lib/trojan-go/server.key",
+    "cert":"/usr/app/ssl/server.crt",
+    "key":"/usr/app/ssl/server.key",
     "key_password": "",
     "sni": "",
     "alpn": [
@@ -41,25 +41,12 @@ cat << EOF >/usr/app/lib/trojan-go/configws.json.template
 }
 EOF
 
- openssl genrsa -out /usr/app/lib/trojan-go/server.key 1024
-openssl req -new -key /usr/app/lib/trojan-go/server.key -out /usr/app/lib/trojan-go/server.csr << EOF
-
-
-
-
-
-
-
-
-
-EOF
- openssl x509 -req -in /usr/app/lib/trojan-go/server.csr -out /usr/app/lib/trojan-go/server.crt -signkey /usr/app/lib/trojan-go/server.key -days 3650
 
 
  sed -e 's/serverName/trojan/' -e 's/serverPass/127.0.0.1:9200/' /usr/app/lib/nginx/upstream_server.conf.template > /usr/app/lib/trojan-go/trojan.us
  cat /usr/app/lib/trojan-go/trojan.us >> /etc/nginx/conf.d/upstream.conf
  sed -e 's:path:'"${WSPATH}/t"':' -e 's/proxyPass/https:\/\/trojan/' /usr/app/lib/nginx/websocket_proxy.conf.template > /usr/app/lib/trojan-go/trojan.ws
- sed -i '27 r /usr/app/lib/trojan-go/trojan.ws' /etc/nginx/conf.d/default.conf
+ sed -i '35 r /usr/app/lib/trojan-go/trojan.ws' /etc/nginx/conf.d/default.conf
  sed -e 's/localtrojanaddr/127.0.0.1/' -e 's/localtrojanport/9200/'   -e 's:remotetrojanport:'"${PORT}"':'   -e 's:CLIENTSID:'"${CLIENTSID}"':'  -e 's:WSPATH:'"${WSPATH}/t"':' /usr/app/lib/trojan-go/configws.json.template > /usr/app/lib/trojan-go/trojan.ws.json
  
  sleep 10s

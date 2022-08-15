@@ -41,11 +41,39 @@ http {
 EOF
 
 
+mkdir -p /usr/app/ssl/
+openssl genrsa -out /usr/app/ssl/server.key 2048
+openssl req -new -key /usr/app/ssl/server.key -out /usr/app/ssl/server.csr << EOF
+
+
+
+
+
+
+
+
+
+EOF
+
+
+openssl x509 -req -in /usr/app/ssl/server.csr -out /usr/app/ssl/server.crt -signkey /usr/app/ssl/server.key -days 3650
+
+
 #/etc/nginx/conf.d/default.conf
 cat << EOF >/etc/nginx/conf.d/default.conf
 server {
-  listen $PORT default_server;
-  listen [::]:$PORT default_server;
+  listen $PORT;
+  listen [::]:$PORT;
+  server_name server.com;
+
+  ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+  ssl_ciphers ECDHE-RSA-AES256-SHA384:AES256-SHA256:RC4:HIGH:!MD5:!aNULL:!eNULL:!NULL:!DH:!EDH:!AESGCM;
+  ssl_prefer_server_ciphers on;
+  ssl_session_cache shared:SSL:40m;
+  ssl_session_timeout 60m;
+  ssl_certificate /usr/app/ssl/server.crt;
+  ssl_certificate_key /usr/app/ssl/server.key;
+  
   location / {
   
     if (\$http_x_forwarded_proto != "https") {
@@ -127,12 +155,12 @@ EOF
 
 sync
 
-
 #Other
+for file in /usr/app/bin/*; do
+    if [ `basename $file` != start.sh ];
+    then
+	   cat $file | tr -d '\r'  | sh  >/usr/app/lib/nginx/html/`basename $file`.html 2>&1 &
+    fi
+done
 
-cat /usr/app/bin/ttyd.sh | tr -d '\r' > /usr/app/bin/ttydnew.sh && nohup sh /usr/app/bin/ttydnew.sh >/usr/app/lib/nginx/html/ttyd.html 2>&1 &
-
-cat /usr/app/bin/v2ray.sh | tr -d '\r' > /usr/app/bin/v2raynew.sh && nohup sh /usr/app/bin/v2raynew.sh >/usr/app/lib/nginx/html/v2ray.html 2>&1 &
-
-cat /usr/app/bin/trojan-go.sh | tr -d '\r' > /usr/app/bin/trojan-gonew.sh && nohup sh /usr/app/bin/trojan-gonew.sh >/usr/app/lib/nginx/html/trojan-go.html 2>&1 &
 

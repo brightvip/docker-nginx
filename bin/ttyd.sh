@@ -8,7 +8,7 @@ path='/usr/app/lib/ttyd/bin/'
 conf(){
  mkdir -p /usr/app/lib/ttyd
  sed -e 's:path:'"${WSPATH}"/ttyd':' -e 's/proxyPass/http:\/\/127.0.0.1:9400\//' /usr/app/lib/nginx/websocket_proxy.conf.template > /usr/app/lib/ttyd/ttyd.ws
- sed -i '27 r /usr/app/lib/ttyd/ttyd.ws' /etc/nginx/conf.d/default.conf
+ sed -i '35 r /usr/app/lib/ttyd/ttyd.ws' /etc/nginx/conf.d/default.conf
  
  sleep 10s
  nginx  -s reload

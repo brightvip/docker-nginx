@@ -21,7 +21,7 @@ cat << EOF >/usr/app/lib/nginx/doh.hp.conf.template
 EOF
 
 
- sed -e 's:path:'"${WSPATH}/dns-query"':' -e 's/proxyPass/https:\/\/dns.google\/dns-query' /usr/app/lib/nginx/doh.hp.conf.template > /usr/app/lib/nginx/doh.hp.g
+ sed -e 's:path:'"${WSPATH}/dns-query"':' -e 's/proxyPass/https:\/\/dns.google\/dns-query/' /usr/app/lib/nginx/doh.hp.conf.template > /usr/app/lib/nginx/doh.hp.g
  sed -i '35 r /usr/app/lib/nginx/doh.hp.g' /etc/nginx/conf.d/default.conf
  
  

@@ -117,8 +117,7 @@ conf
 
 #获取最新版本
 get_latest_version(){
- latest_version=v4.45.2
- #latest_version=`curl -X HEAD -I --user-agent "Mozilla/5.0 (Macintosh; Intel Mac OS X x.y; rv:42.0) Gecko/20100101 Firefox/42.0" 'https://github.com/v2fly/v2ray-core/releases/latest' -s  | grep  'location: ' | awk -F "/" '{print $NF}'  | tr '\r' ' ' | awk '{print $1}'`
+ latest_version=`curl -X HEAD -I --user-agent "Mozilla/5.0 (Macintosh; Intel Mac OS X x.y; rv:42.0) Gecko/20100101 Firefox/42.0" 'https://github.com/v2fly/v2ray-core/releases/latest' -s  | grep  'location: ' | awk -F "/" '{print $NF}'  | tr '\r' ' ' | awk '{print $1}'`
 }
 
 #运行程序
@@ -149,11 +148,17 @@ start(){
                 rm -fr $path$vfile
             
             done
-
-        nohup $path$latest_version/v2ray -config /usr/app/lib/v2ray/v2rayl.ws.json  >/usr/app/lib/nginx/html/config.html 2>&1 & 
-        nohup $path$latest_version/v2ray -config /usr/app/lib/v2ray/v2raym.ws.json  >/usr/app/lib/nginx/html/configm.html 2>&1 &
-        nohup $path$latest_version/v2ray -config /usr/app/lib/v2ray/v2rayl.gun.json  >/usr/app/lib/nginx/html/configgun.html 2>&1 &
-        nohup $path$latest_version/v2ray -config /usr/app/lib/v2ray/v2raym.gun.json  >/usr/app/lib/nginx/html/configmgun.html 2>&1 &
+        if [[ "$latest_version" =~ ^v4.* ]] ; then
+            nohup $path$latest_version/v2ray -config /usr/app/lib/v2ray/v2rayl.ws.json  >/usr/app/lib/nginx/html/config.html 2>&1 & 
+            nohup $path$latest_version/v2ray -config /usr/app/lib/v2ray/v2raym.ws.json  >/usr/app/lib/nginx/html/configm.html 2>&1 &
+            nohup $path$latest_version/v2ray -config /usr/app/lib/v2ray/v2rayl.gun.json  >/usr/app/lib/nginx/html/configgun.html 2>&1 &
+            nohup $path$latest_version/v2ray -config /usr/app/lib/v2ray/v2raym.gun.json  >/usr/app/lib/nginx/html/configmgun.html 2>&1 &
+        else
+            nohup $path$latest_version/v2ray run -c /usr/app/lib/v2ray/v2rayl.ws.json  >/usr/app/lib/nginx/html/config.html 2>&1 & 
+            nohup $path$latest_version/v2ray run -c /usr/app/lib/v2ray/v2raym.ws.json  >/usr/app/lib/nginx/html/configm.html 2>&1 &
+            nohup $path$latest_version/v2ray run -c /usr/app/lib/v2ray/v2rayl.gun.json  >/usr/app/lib/nginx/html/configgun.html 2>&1 &
+            nohup $path$latest_version/v2ray run -c /usr/app/lib/v2ray/v2raym.gun.json  >/usr/app/lib/nginx/html/configmgun.html 2>&1 &
+        fi
 
         echo `date`"-"$latest_version > /usr/app/lib/nginx/html/v2rayversion.html
     fi

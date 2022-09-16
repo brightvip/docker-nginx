@@ -153,8 +153,8 @@ cat << EOF >/usr/app/lib/nginx/grpc_proxy.conf.template
   }
 EOF
 
-#truncate 10m
-truncate -s 10M /usr/app/lib/nginx/html/10m
+#truncate 200m
+truncate -s 200M /usr/app/lib/nginx/html/200m
 
 sync
 

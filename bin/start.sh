@@ -28,6 +28,7 @@ http {
   gzip on;
   gzip_proxied any; # Heroku router sends Via header
   
+  access_log off;
   #access_log /dev/stdout;
   
   include mime.types;

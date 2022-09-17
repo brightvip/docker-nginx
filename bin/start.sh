@@ -32,7 +32,7 @@ http {
                           '"$request" $status $request_length $request_time $time_iso8601 [$request_body]  $bytes_sent '
                           '"$http_referer" "$http_user_agent" "$gzip_ratio"';
   
-  access_log /usr/app/lib/nginx/logs/access.log compression_telegraf buffer=32k;
+  access_log /usr/app/lib/nginx/logs/access.log compression buffer=32k;
   #access_log /dev/stdout;
   
   include mime.types;

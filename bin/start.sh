@@ -62,8 +62,8 @@ openssl x509 -req -in /usr/app/ssl/server.csr -out /usr/app/ssl/server.crt -sign
 #/etc/nginx/conf.d/default.conf
 cat << EOF >/etc/nginx/conf.d/default.conf
 server {
-  listen $PORT ssl;
-  listen [::]:$PORT ssl;
+  listen $PORT;
+  listen [::]:$PORT;
   server_name server.com;
 
   ssl_protocols TLSv1 TLSv1.1 TLSv1.2;

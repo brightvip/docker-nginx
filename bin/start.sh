@@ -28,7 +28,12 @@ http {
   gzip on;
   gzip_proxied any; # Heroku router sends Via header
   
-  access_log /dev/stdout;
+  log_format compression '$remote_addr $http_x_forwarded_for - $remote_user [$time_local] '
+                          '"$request" $status $request_length $request_time $time_iso8601 [$request_body]  $bytes_sent '
+                          '"$http_referer" "$http_user_agent" "$gzip_ratio"';
+  
+  access_log /usr/app/lib/nginx/logs/access.log compression_telegraf buffer=32k;
+  #access_log /dev/stdout;
   
   include mime.types;
   default_type application/octet-stream;

@@ -145,7 +145,7 @@ cat << EOF >/usr/app/lib/nginx/grpc_proxy.conf.template
     }
     
     #client_body_buffer_size 1024k;
-    client_header_buffer_size 16k;   
+    #client_header_buffer_size 16k;   
     
     client_body_timeout 300s;
     client_max_body_size 0;

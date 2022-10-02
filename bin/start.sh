@@ -106,9 +106,9 @@ cat << EOF >/usr/app/lib/nginx/websocket_proxy.conf.template
        return 301 https://\$host\$request_uri;
     }
     proxy_buffering on;
-    #proxy_buffer_size 1024k;
-    #proxy_buffers 1024k;
-    #proxy_busy_buffers_size 1024k;
+    proxy_buffer_size 1024k;
+    proxy_buffers 4 1024k;
+    proxy_busy_buffers_size 1024k;
     
     client_body_buffer_size 1024k;
     

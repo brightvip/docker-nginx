@@ -105,7 +105,7 @@ cat << EOF >/usr/app/lib/nginx/websocket_proxy.conf.template
     if (\$http_x_forwarded_proto != "https") {
        return 301 https://\$host\$request_uri;
     }
-    proxy_buffering on;
+    proxy_buffering off;
     proxy_buffer_size 1024k;
     proxy_buffers 8 1024k;
     proxy_busy_buffers_size 1024k;
@@ -153,7 +153,7 @@ cat << EOF >/usr/app/lib/nginx/grpc_proxy.conf.template
     grpc_read_timeout 300s;
     grpc_send_timeout 300s;
     grpc_socket_keepalive on;
-    grpc_buffer_size 1024k;
+    grpc_buffer_size 1k;
     grpc_pass proxyPass;
   }
 EOF

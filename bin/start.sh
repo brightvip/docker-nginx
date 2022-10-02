@@ -94,6 +94,7 @@ cat << EOF >/usr/app/lib/nginx/upstream_server.conf.template
 	upstream serverName {
 		server serverPass fail_timeout=0;
 		keepalive 10;
+		keepalive_timeout 300s;
 	}
 EOF
 

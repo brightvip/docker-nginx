@@ -114,6 +114,10 @@ cat << EOF >/usr/app/lib/nginx/websocket_proxy.conf.template
     proxy_set_header X-Real-IP \$remote_addr;
     proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
     proxy_socket_keepalive on;
+    client_body_timeout 300s;
+    client_max_body_size 0;
+    keepalive_timeout 300s;
+    send_timeout 300s;
   }
 EOF
 
@@ -129,9 +133,14 @@ cat << EOF >/usr/app/lib/nginx/grpc_proxy.conf.template
         return 404;
     }
     
+    client_body_timeout 300s;
     client_max_body_size 0;
-    client_body_timeout 1071906480m;
-    grpc_read_timeout 1071906480m;
+    keepalive_timeout 300s;
+    send_timeout 300s;
+    grpc_connect_timeout 75s;
+    grpc_read_timeout 300s;
+    grpc_send_timeout 300s;
+    grpc_socket_keepalive on;
     grpc_pass proxyPass;
   }
 EOF

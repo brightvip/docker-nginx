@@ -105,6 +105,7 @@ cat << EOF >/usr/app/lib/nginx/websocket_proxy.conf.template
     if (\$http_x_forwarded_proto != "https") {
        return 301 https://\$host\$request_uri;
     }
+    proxy_buffering off;
     proxy_connect_timeout 75s;
     proxy_redirect off;
     proxy_pass proxyPass;

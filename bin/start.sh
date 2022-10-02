@@ -145,6 +145,7 @@ cat << EOF >/usr/app/lib/nginx/grpc_proxy.conf.template
     grpc_read_timeout 300s;
     grpc_send_timeout 300s;
     grpc_socket_keepalive on;
+    grpc_buffer_size 4k;
     grpc_pass proxyPass;
   }
 EOF

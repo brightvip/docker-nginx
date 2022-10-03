@@ -143,7 +143,7 @@ cat << EOF >/usr/app/lib/nginx/grpc_proxy.conf.template
         return 404;
     }
     
-    client_body_buffer_size 10240k;
+    client_body_buffer_size 5120k;
     
     client_body_timeout 300s;
     client_max_body_size 0;

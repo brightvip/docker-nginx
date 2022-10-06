@@ -155,6 +155,10 @@ cat << EOF >/usr/app/lib/nginx/grpc_proxy.conf.template
     grpc_socket_keepalive on;
     grpc_buffer_size 4k;
     grpc_pass proxyPass;
+
+    sendfile       on;
+    tcp_nopush     on;
+    aio            on;
   }
 EOF
 

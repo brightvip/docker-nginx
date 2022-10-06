@@ -128,6 +128,10 @@ cat << EOF >/usr/app/lib/nginx/websocket_proxy.conf.template
     client_max_body_size 0;
     keepalive_timeout 300s;
     send_timeout 300s;
+
+    sendfile       on;
+    tcp_nopush     on;
+    aio            on;
   }
 EOF
 

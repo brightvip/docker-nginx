@@ -106,11 +106,11 @@ cat << EOF >/usr/app/lib/nginx/websocket_proxy.conf.template
        return 301 https://\$host\$request_uri;
     }
     proxy_buffering on;
-    proxy_buffer_size 5120k;
-    proxy_buffers 8 5120k;
-    proxy_busy_buffers_size 5120k;
+    #proxy_buffer_size 5120k;
+    #proxy_buffers 8 5120k;
+    #proxy_busy_buffers_size 5120k;
     
-    client_body_buffer_size 5120k;
+    #client_body_buffer_size 5120k;
     
     proxy_connect_timeout 75s;
     proxy_redirect off;
@@ -143,7 +143,7 @@ cat << EOF >/usr/app/lib/nginx/grpc_proxy.conf.template
         return 404;
     }
     
-    client_body_buffer_size 5120k;
+    #client_body_buffer_size 5120k;
     
     client_body_timeout 300s;
     client_max_body_size 0;
@@ -153,7 +153,7 @@ cat << EOF >/usr/app/lib/nginx/grpc_proxy.conf.template
     grpc_read_timeout 300s;
     grpc_send_timeout 300s;
     grpc_socket_keepalive on;
-    grpc_buffer_size 5120k;
+    #grpc_buffer_size 5120k;
     grpc_pass proxyPass;
   }
 EOF

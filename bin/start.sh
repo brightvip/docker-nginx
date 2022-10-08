@@ -13,7 +13,7 @@ pid /var/run/nginx.pid;
 events {
   use epoll;
   accept_mutex on;
-  worker_connections 1024;
+  worker_connections 65535;
 }
 
 http {

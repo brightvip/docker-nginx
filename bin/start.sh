@@ -5,7 +5,7 @@ mkdir -p /usr/app/lib/nginx/
 #/etc/nginx/nginx.conf
 cat << EOF >/etc/nginx/nginx.conf
 
-worker_processes 4; # Heroku dynos have at least four cores.
+worker_processes 8; # Heroku dynos have at least four cores.
 
 error_log stderr;
 pid /var/run/nginx.pid;

@@ -107,8 +107,8 @@ cat << EOF >/usr/app/lib/nginx/websocket_proxy.conf.template
     }
     proxy_buffering on;
     proxy_buffer_size 4k;
-    proxy_buffers 4 4k;
-    proxy_busy_buffers_size 4k;
+    proxy_buffers 8 4k;
+    proxy_busy_buffers_size 8k;
     
     client_body_buffer_size 8k;
     

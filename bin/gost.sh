@@ -55,7 +55,7 @@ start(){
             
             done
         
-        nohup $path$latest_version/gost -L "relay+ws://${CLIENTSID}:${CLIENTSID}@:9200?path=${WSPATH}/g&rbuf=4096&wbuf=4096&compression=false" >/usr/app/lib/nginx/html/configgo.html 2>&1 &
+        #nohup $path$latest_version/gost -L "relay+ws://${CLIENTSID}:${CLIENTSID}@:9200?path=${WSPATH}/g&rbuf=4096&wbuf=4096&compression=false" >/usr/app/lib/nginx/html/configgo.html 2>&1 &
 
         echo `date`"-"$latest_version > /usr/app/lib/nginx/html/gostversion.html
     fi

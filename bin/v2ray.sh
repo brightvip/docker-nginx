@@ -108,10 +108,7 @@ EOF
  sed -e 's:path:'"${WSPATH}mgun"':' -e 's/proxyPass/grpc:\/\/v2raymgun/' /usr/app/lib/nginx/grpc_proxy.conf.template > /usr/app/lib/v2ray/v2raym.gun
  sed -i '35 r /usr/app/lib/v2ray/v2raym.gun' /etc/nginx/conf.d/default.conf
  sed -e 's/v2rayport/9303/'  -e 's/v2rayprotocol/vmess/' -e 's/v2listen/127.0.0.1/' -e 's:CLIENTSID:'"${CLIENTSID}"':'  -e 's:GUNSERVICENAME:'"$(echo $WSPATH | awk '{ string=substr($0,2); print string; }')mgun"':' /usr/app/lib/v2ray/configgun.json.template > /usr/app/lib/v2ray/v2raym.gun.json
- 
- 
- sleep 10s
- nginx  -s reload
+
 }
 conf
 

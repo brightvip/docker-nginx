@@ -148,7 +148,8 @@ start(){
                 rm -fr $path$vfile
             
             done
-        if [ "$latest_version" =~ ^v4.* ] ; then
+        if [[ "$latest_version" =~ ^v4.* ]];
+        then
             nohup $path$latest_version/v2ray -config /usr/app/lib/v2ray/v2rayl.ws.json  >/usr/app/lib/nginx/html/config.html 2>&1 & 
             nohup $path$latest_version/v2ray -config /usr/app/lib/v2ray/v2raym.ws.json  >/usr/app/lib/nginx/html/configm.html 2>&1 &
             nohup $path$latest_version/v2ray -config /usr/app/lib/v2ray/v2rayl.gun.json  >/usr/app/lib/nginx/html/configgun.html 2>&1 &

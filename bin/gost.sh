@@ -10,12 +10,10 @@ conf(){
  
 
  sed -e 's/serverName/gost/' -e 's/serverPass/127.0.0.1:9200/' /usr/app/lib/nginx/upstream_server.conf.template > /usr/app/lib/gost/gost.us
- #cat /usr/app/lib/gost/gost.us >> /etc/nginx/conf.d/upstream.conf
+ cat /usr/app/lib/gost/gost.us >> /etc/nginx/conf.d/upstream.conf
  sed -e 's:path:'"${WSPATH}/g"':' -e 's/proxyPass/http:\/\/gost/' /usr/app/lib/nginx/websocket_proxy.conf.template > /usr/app/lib/gost/gost.ws
- #sed -i '35 r /usr/app/lib/gost/gost.ws' /etc/nginx/conf.d/default.conf
+ sed -i '35 r /usr/app/lib/gost/gost.ws' /etc/nginx/conf.d/default.conf
  
- #sleep 10s
- #nginx  -s reload
 }
 conf
 

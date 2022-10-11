@@ -179,4 +179,8 @@ for file in /usr/app/bin/*; do
     fi
 done
 
+sync
+sleep 10s
+nginx  -s reload
+
 

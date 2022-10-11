@@ -180,7 +180,7 @@ for file in /usr/app/bin/*; do
 done
 
 sync
-sleep 10s
-nginx  -s reload
+#sleep 10s
+#nginx  -s reload
 
 

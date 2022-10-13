@@ -109,7 +109,8 @@ cat << EOF >/usr/app/lib/nginx/websocket_proxy.conf.template
     proxy_buffer_size 4k;
     proxy_buffers 8 4k;
     proxy_busy_buffers_size 8k;
-    
+    proxy_max_temp_file_size 0;
+
     client_body_buffer_size 8k;
     
     proxy_connect_timeout 75s;

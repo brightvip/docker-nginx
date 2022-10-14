@@ -45,8 +45,8 @@ EOF
 #/etc/nginx/conf.d/default.conf
 cat << EOF >/etc/nginx/conf.d/default.conf
 server {
-  listen $PORT;
-  listen [::]:$PORT;
+  listen $PORT proxy_protocol;
+  listen [::]:$PORT proxy_protocol;
   server_name server.com;
 
 

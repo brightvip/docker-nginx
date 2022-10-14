@@ -47,7 +47,3 @@ async function handleRequest(request) {
     return newResponse;
 }
 ```
-
-
-
-

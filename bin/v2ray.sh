@@ -33,7 +33,8 @@ cat << EOF >/usr/app/lib/v2ray/configws.json.template
         "wsSettings": {
           "path": "WSPATH",
           "maxEarlyData": 1024,
-          "earlyDataHeaderName":"Sec-WebSocket-Protocol"
+          "earlyDataHeaderName": "Sec-WebSocket-Protocol",
+          "acceptProxyProtocol": true
         }
       }
     }

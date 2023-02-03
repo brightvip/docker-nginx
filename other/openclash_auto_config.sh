@@ -334,7 +334,7 @@ EOF
       if [ -f $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/ipv6.txt ] && [ -f $path/ip_scanner/ip_scanner.ip ] ; then
         sed -i '1r '"${path}"'/ip_scanner/ip_scanner.ip' $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/ipv6.txt
       fi
-      $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/CloudflareST -httping -f $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/ipv6.txt -o $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/result.txt -t 2 -dn 100 -n 100
+      $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/CloudflareST -httping -f $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/ipv6.txt -o $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/result.txt -t 2 -dn 10 -n 100
     fi
     
     ips=''

@@ -52,11 +52,6 @@ server {
 
 
 
-
-
-
-
-  
   location / {
   
     if (\$http_x_forwarded_proto != "https") {
@@ -66,6 +61,11 @@ server {
     
     proxy_pass https://github.com;
   }
+  
+  location /url {
+      return 301 https://\$host\$request_uri/html/200m;
+  }
+  
   location /html/ {
   
     if (\$http_x_forwarded_proto != "https") {

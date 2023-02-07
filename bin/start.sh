@@ -63,7 +63,7 @@ server {
   }
   
   location /url {
-      return 301 https://\$host\$request_uri/html/200m;
+      return 301 https://\$host/html/200m;
   }
   
   location /html/ {

@@ -63,7 +63,7 @@ server {
   }
   
   location /url {
-      return 301 https://\$host/html/200m;
+      return 301 https://\$host/html/5m;
   }
   
   location /html/ {
@@ -167,8 +167,8 @@ cat << EOF >/usr/app/lib/nginx/grpc_proxy.conf.template
   }
 EOF
 
-#truncate 200m
-truncate -s 200M /usr/app/lib/nginx/html/200m
+#truncate 5m
+truncate -s 5M /usr/app/lib/nginx/html/5m
 
 sync
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-path=`pwd`
+path==$(dirname $(readlink -f $0))
 
 downloadCloudflareSpeedTest(){
  latest_version_CloudflareSpeedTest=`curl --retry 10 --retry-max-time 360 -X HEAD -I --user-agent "Mozilla/5.0 (Macintosh; Intel Mac OS X x.y; rv:42.0) Gecko/20100101 Firefox/42.0" 'https://github.com/XIU2/CloudflareSpeedTest/releases/latest' -s  | grep  'location: ' | awk -F "/" '{print $NF}'  | tr '\r' ' ' | awk '{print $1}'`
@@ -12,8 +12,8 @@ downloadCloudflareSpeedTest(){
     tar -zxf $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/CloudflareST_linux_mipsle.tar.gz -C $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/
     rm -fr $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/CloudflareST_linux_mipsle.tar.gz    
  fi
- rm -fr $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/ipv6.txt
- curl --retry 10 --retry-max-time 360 -H "Cache-Control: no-cache" -fsSL https://raw.githubusercontent.com/XIU2/CloudflareSpeedTest/master/ipv6.txt -o $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/ipv6.txt -k
+rm -fr $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/ipv6.txt
+curl --retry 10 --retry-max-time 360 -H "Cache-Control: no-cache" -fsSL https://raw.githubusercontent.com/XIU2/CloudflareSpeedTest/master/ipv6.txt -o $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/ipv6.txt -k
 }
 
 download_ip_scanner(){
@@ -133,7 +133,8 @@ dns:
   # Specify IP addresses only
   default-nameserver:
     - 1.1.1.1
-    - 114.114.114.114
+    - 8.8.8.8
+    - 9.9.9.9
   enhanced-mode: redir-host #redir-host  or fake-ip
   fake-ip-range: 198.18.0.1/16 # Fake IP addresses pool CIDR
   use-hosts: true # lookup hosts and return IP record
@@ -151,7 +152,7 @@ dns:
   nameserver:
     - 'tcp://8.8.8.8'
     - https://1.1.1.1/dns-query
-    - 114.114.114.114
+    - 'tcp://9.9.9.9'
     #- dhcp://en0 # dns from dhcp
 
   # When `fallback` is present, the DNS server will send concurrent requests
@@ -161,6 +162,7 @@ dns:
   fallback:
     - 'tcp://8.8.8.8'
     - https://1.1.1.1/dns-query
+    - 'tcp://9.9.9.9'
     
   # If IP addresses resolved with servers in `nameservers` are in the specified
   # subnets below, they are considered invalid and results from `fallback`
@@ -293,7 +295,7 @@ EOF
 auto_clash_config_ip_by_CloudflareSpeedTest(){
     read -r -d '' clash_config_proxie <<- 'EOF'
 
-  - name: "vip2-vmess-ws_%s"
+  - name: "vmess-ws_%s"
     type: vmess
     server: %s
     port: 
@@ -312,7 +314,7 @@ auto_clash_config_ip_by_CloudflareSpeedTest(){
        #max-early-data: 1024
        #early-data-header-name: Sec-WebSocket-Protocol
 
-  - name: vip2-vmess-grpc_%s
+  - name: vmess-grpc_%s
     server: %s
     port: 
     type: vmess
@@ -333,6 +335,7 @@ EOF
     if [ -f $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/CloudflareST ]; then
       if [ -f $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/ipv6.txt ] && [ -f $path/ip_scanner/ip_scanner.ip ] ; then
         sed -i '1r '"${path}"'/ip_scanner/ip_scanner.ip' $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/ipv6.txt
+        sed -i 's/\r//g' $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/ipv6.txt
       fi
       $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/CloudflareST -httping -f $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/ipv6.txt -o $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/result.txt -t 2 -dn 10 -n 100
     fi
@@ -359,12 +362,12 @@ EOF
     proxies_ip=''
     for ip in $ips
     do 
-        proxies_ip="$proxies_ip   - vip2-vmess-ws_$ip
+        proxies_ip="$proxies_ip   - vmess-ws_$ip
     "
     done
     for ip in $ips
     do 
-        proxies_ip="$proxies_ip   - vip2-vmess-grpc_$ip
+        proxies_ip="$proxies_ip   - vmess-grpc_$ip
     "
     done
 
@@ -378,6 +381,35 @@ ${clash_config_end}" > /etc/openclash/config/config.yaml
 }
 
 
+download_openclash(){
+ latest_version_openclash=`curl --retry 10 --retry-max-time 360 -X GET  --user-agent "Mozilla/5.0 (Macintosh; Intel Mac OS X x.y; rv:42.0) Gecko/20100101 Firefox/42.0" 'https://api.github.com/repos/vernesong/OpenClash/tags' -s | awk '/name/{print $0; exit;}' | awk '/name/{print $0; exit;}' | awk -F '"' '{print $4}'`
+ current_version_openclash="v`opkg find luci-app-openclash* | awk -F ' ' '{print $3}'`"
+ echo "$latest_version_openclash $current_version_openclash"
+  if [ -n "$current_version_openclash" ] && [ -n "$latest_version_openclash" ] && [ "$latest_version_openclash" != "$current_version_openclash" ]
+  then
+    rm -fr $path/openclashv*
+    echo "download $path/openclash$latest_version_openclash"
+    mkdir $path/openclash$latest_version_openclash
+    curl --retry 10 --retry-max-time 360 -H "Cache-Control: no-cache" -fsSL https://github.com/vernesong/OpenClash/releases/download/$latest_version_openclash/luci-app-openclash_`echo $latest_version_openclash | awk '{print substr($1,2)}'`_all.ipk -o $path/openclash$latest_version_openclash/luci-app-openclash_`echo $latest_version_openclash | awk '{print substr($1,2)}'`_all.ipk
+    /etc/init.d/openclash stop
+    opkg install $path/openclash$latest_version_openclash/luci-app-openclash_`echo $latest_version_openclash | awk '{print substr($1,2)}'`_all.ipk
+      
+    begin_line=`awk '/^start_run_core()/{print NR; exit;}' /etc/init.d/openclash`
+    end_line=`awk 'NR>'$begin_line' && /^}/ {print NR; exit;}' /etc/init.d/openclash`
+    if [ "`awk 'NR=='$end_line'-2 {print $0}' /etc/init.d/openclash`" = "   uci -q set openclash.config.config_reload=1" ];then
+      sed -i ''$begin_line','$end_line' s/ulimit -v unlimited 2>\/dev\/null/ulimit -v `free -k | awk '"'NR==2{print \$2}'"'` 2>\/dev\/null/' /etc/init.d/openclash
+      sed -i 'N;'$end_line' i\   LOG_OUT "Step 4.1: clash_pid:\$clash_pid oom_score_adj:\$oom_score_adj_value"' /etc/init.d/openclash
+      sed -i 'N;'$end_line' i\   oom_score_adj_value=`cat /proc/\$clash_pid/oom_score_adj`' /etc/init.d/openclash
+      sed -i 'N;'$end_line' i\   echo "-1000" > /proc/\$clash_pid/oom_score_adj' /etc/init.d/openclash
+      sed -i 'N;'$end_line' i\   clash_pid=`ps |grep \$CLASH | grep nobody | grep -v '"'grep'"'  | awk '"'{print \$1}'"' | tr "\\n" " "|sed '"'s/.$//'"'`' /etc/init.d/openclash
+      awk 'NR>'$begin_line'&&NR<'$end_line'+5{print $0}' /etc/init.d/openclash
+    else
+      awk 'NR>'$begin_line'&&NR<'$end_line'+1{print $0}' /etc/init.d/openclash
+    fi
+    /etc/init.d/openclash restart
+  fi
+}
+
 init_clash_config
 downloadCloudflareSpeedTest
 download_ip_scanner
@@ -385,17 +417,9 @@ install_clash
 /etc/init.d/openclash stop
 auto_clash_config_ip_by_CloudflareSpeedTest
 /etc/init.d/openclash restart
-
-
+download_openclash
 
 
 
 #0 17 * * * /bin/opkg update && /bin/opkg upgrade kmod-tcp-bbr `/bin/opkg list-upgradable | /usr/bin/awk '{print $1}'| /usr/bin/awk BEGIN{RS=EOF}'{gsub(/\n/," ");print}'` --force-overwrite
-#0 20 * * * /root/openclash_auto_config/openclash_auto_config.sh > /root/openclash_auto_config/start.log 2>&1
-#
-#ulimit -v `free -k | awk 'NR==2{print $2}'` 2>/dev/null
-#
-#clash_pid=`ps |grep $CLASH | grep nobody | grep -v 'grep'  | awk '{print $1}' | tr "\n" " "|sed 's/.$//'`
-#echo "-1000" > /proc/$clash_pid/oom_score_adj
-#oom_score_adj_value=`cat /proc/$clash_pid/oom_score_adj`
-#LOG_OUT "Step 4.1: clash_pid:$clash_pid oom_score_adj:$oom_score_adj_value"
+#0 22 * * * /root/openclash_auto_config/openclash_auto_config.sh > /root/openclash_auto_config/start.log 2>&1

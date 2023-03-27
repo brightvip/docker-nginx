@@ -263,20 +263,16 @@ proxy-groups:
     type: load-balance
     proxies:
     %proxies_ip
-    url: 'http://www.gstatic.com/generate_204'
-    tolerance: 150
-    lazy: true
+    url: 'https://www.youtube.com/generate_204'
     interval: 600
-    strategy: round-robin #consistent-hashing or round-robin
+    strategy: consistent-hashing # or round-robin
  
 
-  - name: "url-test"
-    type: url-test
+  - name: "fallback"
+    type: fallback
     proxies:
     %proxies_ip
-    url: 'http://www.gstatic.com/generate_204'
-    tolerance: 150
-    lazy: true
+    url: 'https://www.youtube.com/generate_204'
     interval: 600
     
   - name: select
@@ -284,7 +280,7 @@ proxy-groups:
     disable-udp: false
     proxies:
       - load-balance
-      - url-test
+      - fallback
 
 EOF
 

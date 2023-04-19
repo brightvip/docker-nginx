@@ -1,6 +1,6 @@
 #!/bin/bash
 
-path==$(dirname $(readlink -f $0))
+path=$(dirname $(readlink -f $0))
 
 downloadCloudflareSpeedTest(){
  latest_version_CloudflareSpeedTest=`curl --retry 10 --retry-max-time 360 -X HEAD -I --user-agent "Mozilla/5.0 (Macintosh; Intel Mac OS X x.y; rv:42.0) Gecko/20100101 Firefox/42.0" 'https://github.com/XIU2/CloudflareSpeedTest/releases/latest' -s  | grep  'location: ' | awk -F "/" '{print $NF}'  | tr '\r' ' ' | awk '{print $1}'`
@@ -20,21 +20,22 @@ download_ip_scanner(){
  mkdir -p $path/ip_scanner
  curl --retry 10 --retry-max-time 360 -H "Cache-Control: no-cache" -fsSL https://codeload.github.com/ip-scanner/cloudflare/zip/refs/heads/daily -o $path/ip_scanner/cloudflare-daily.zip
  unzip -q $path/ip_scanner/cloudflare-daily.zip  -d $path/ip_scanner/
- cat $path/ip_scanner/cloudflare-daily/*中国*.txt > $path/ip_scanner/ip_scanner.ip
+ find $path/ip_scanner/cloudflare-daily -name '*香港*.txt' -o -name '*新加坡*.txt' -o -name '*澳门*.txt' -o -name '*彰化*.txt' -o -name '*台中*.txt' -o -name '*东京*.txt' -print0| xargs -0 cat > $path/ip_scanner/ip_scanner.ip 
  rm -fr $path/ip_scanner/cloudflare-daily/ $path/ip_scanner/cloudflare-daily.zip
 }
 
 install_clash(){
- latest_version_clash=`curl --retry 10 --retry-max-time 360 -X HEAD -I --user-agent "Mozilla/5.0 (Macintosh; Intel Mac OS X x.y; rv:42.0) Gecko/20100101 Firefox/42.0" 'https://github.com/Dreamacro/clash/releases/latest' -s  | grep  'location: ' | awk -F "/" '{print $NF}'  | tr '\r' ' ' | awk '{print $1}'`
+ latest_version_clash=`curl --retry 10 --retry-max-time 360 -X GET --user-agent "Mozilla/5.0 (Macintosh; Intel Mac OS X x.y; rv:42.0) Gecko/20100101 Firefox/42.0" 'https://github.com/Dreamacro/clash/releases/expanded_assets/premium' -s | grep mipsle-softfloat | awk -F "\"|-|.gz" 'NR==1{print $6}'`
  if [ -n "$latest_version_clash" ] && [ ! -d $path/clash$latest_version_clash ]; then
     rm -fr $path/clash*
     echo "download $path/clash$latest_version_clash"
     mkdir -p $path/clash$latest_version_clash
-    curl --retry 10 --retry-max-time 360 -H "Cache-Control: no-cache" -fsSL https://github.com/Dreamacro/clash/releases/download/$latest_version_clash/clash-linux-mipsle-softfloat-$latest_version_clash.gz -o $path/clash$latest_version_clash/clash-linux-mipsle-softfloat.gz
+    curl --retry 10 --retry-max-time 360 -H "Cache-Control: no-cache" -fsSL https://github.com/Dreamacro/clash/releases/download/premium/clash-linux-mipsle-softfloat-$latest_version_clash.gz -o $path/clash$latest_version_clash/clash-linux-mipsle-softfloat.gz
     gzip -d $path/clash$latest_version_clash/clash-linux-mipsle-softfloat.gz
     mv $path/clash$latest_version_clash/clash-linux-mipsle-softfloat /etc/openclash/core/clash
     chmod +x /etc/openclash/core/clash
     chown nobody /etc/openclash/core/clash
+    ln -s /etc/openclash/core/clash /etc/openclash/core/clash_tun
  fi
 }
 
@@ -89,7 +90,7 @@ external-controller: 127.0.0.1:9090
 # A relative path to the configuration directory or an absolute path to a
 # directory in which you put some static web resource. Clash core will then
 # serve it at `http://{{external-controller}}/ui`.
-#external-ui: folder
+# external-ui: folder
 
 # Secret for the RESTful API (optional)
 # Authenticate by spedifying HTTP header `Authorization: Bearer ${secret}`
@@ -113,14 +114,14 @@ hosts:
   # '.dev': 127.0.0.1
   # 'alpha.clash.dev': '::1'
 
-profile:
+# profile:
   # Store the `select` results in $HOME/.config/clash/.cache
   # set false If you don't want this behavior
   # when two different configurations have groups with the same name, the selected values are shared
-  store-selected: true
+  # store-selected: true
 
   # persistence fakeip
-  store-fake-ip: true
+  # store-fake-ip: true
 
 # DNS server settings
 # This section is optional. When not present, the DNS server will be disabled.
@@ -133,11 +134,13 @@ dns:
   # Specify IP addresses only
   default-nameserver:
     - 1.1.1.1
-    - 8.8.8.8
     - 9.9.9.9
-  enhanced-mode: redir-host #redir-host  or fake-ip
+    - 8.8.8.8
+  enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16 # Fake IP addresses pool CIDR
-  use-hosts: true # lookup hosts and return IP record
+  # use-hosts: true # lookup hosts and return IP record
+
+  # search-domains: [local] # search domains for A/AAAA record
   
   # Hostnames in this list will not be resolved with fake IPs
   # i.e. questions to these domain names will always be answered with their
@@ -150,19 +153,16 @@ dns:
   # All DNS questions are sent directly to the nameserver, without proxies
   # involved. Clash answers the DNS question with the first result gathered.
   nameserver:
-    - 'tcp://8.8.8.8'
     - https://1.1.1.1/dns-query
     - 'tcp://9.9.9.9'
-    #- dhcp://en0 # dns from dhcp
+    #- dhcp://en0 # dns from dhcp    
 
   # When `fallback` is present, the DNS server will send concurrent requests
   # to the servers in this section along with servers in `nameservers`.
   # The answers from fallback servers are used when the GEOIP country
   # is not `CN`.
   fallback:
-    - 'tcp://8.8.8.8'
-    - https://1.1.1.1/dns-query
-    - 'tcp://9.9.9.9'
+    - 'tcp://127.0.0.1:18888'
     
   # If IP addresses resolved with servers in `nameservers` are in the specified
   # subnets below, they are considered invalid and results from `fallback`
@@ -181,11 +181,19 @@ dns:
     ipcidr:
       - 240.0.0.0/4
     domain:
-      - '+.google.com'
       - '+.facebook.com'
+      - '+.google.com'
       - '+.youtube.com'
       - '+.ytimg.com'
       - '+.googlevideo.com'
+      - '+.goog'
+      - '+.googleapis.com'
+      - '+.ggpht.com'
+      - '+.googleusercontent.com'
+      - '+.googleapis-cn.com'
+      - '+.doubleclick.net'
+      - '+.googleadservices.com'
+      - '+.googlesyndication.com'
       - '+.openwrt.org'
 
   # Lookup domains via specific nameservers
@@ -211,7 +219,15 @@ EOF
 
 proxy-providers:
 
+tunnels:
+  - tcp/udp,127.0.0.1:18888,8.8.8.8:53,select
+
+script:
+  shortcuts:
+    quic: network == 'udp' and dst_port == 443
+
 rules:
+  - SCRIPT,quic,REJECT
   - IP-CIDR6,::/0,DIRECT
   - IP-CIDR,127.0.0.0/8,DIRECT
   - IP-CIDR,17.0.0.0/8,DIRECT
@@ -230,6 +246,17 @@ rules:
   - DOMAIN-SUFFIX,live.com,DIRECT
   - DOMAIN-SUFFIX,office.com,DIRECT
   - DOMAIN-SUFFIX,google.com,select
+  - DOMAIN-SUFFIX,youtube.com,select
+  - DOMAIN-SUFFIX,ytimg.com,select
+  - DOMAIN-SUFFIX,googlevideo.com,select
+  - DOMAIN-SUFFIX,goog,select
+  - DOMAIN-SUFFIX,googleapis.com,select
+  - DOMAIN-SUFFIX,ggpht.com,select
+  - DOMAIN-SUFFIX,googleusercontent.com,select
+  - DOMAIN-SUFFIX,googleapis-cn.com,select
+  - DOMAIN-SUFFIX,doubleclick.net,select
+  - DOMAIN-SUFFIX,googleadservices.com,select
+  - DOMAIN-SUFFIX,googlesyndication.com,select
   - DOMAIN-SUFFIX,github.com,select
   - DOMAIN-SUFFIX,openwrt.org,select
   - DOMAIN-SUFFIX,truepeoplesearch.net,select
@@ -245,6 +272,7 @@ rules:
   - DOMAIN-KEYWORD,openwrt,select
   - SRC-IP-CIDR,192.168.1.201/32,DIRECT
   # optional param "no-resolve" for IP rules (GEOIP, IP-CIDR, IP-CIDR6)
+  - IP-CIDR,127.0.0.0/8,DIRECT
   - GEOIP,CN,DIRECT
   - GEOIP,US,select
   - GEOIP,DE,select
@@ -263,16 +291,18 @@ proxy-groups:
     type: load-balance
     proxies:
     %proxies_ip
-    url: 'https://www.youtube.com/generate_204'
+    url: 'http://www.gstatic.com/generate_204'
     interval: 600
-    strategy: consistent-hashing # or round-robin
+    strategy: round-robin #consistent-hashing or round-robin
  
 
-  - name: "fallback"
-    type: fallback
+  - name: "url-test"
+    type: url-test
     proxies:
     %proxies_ip
-    url: 'https://www.youtube.com/generate_204'
+    url: 'http://www.gstatic.com/generate_204'
+    tolerance: 150
+    lazy: true
     interval: 600
     
   - name: select
@@ -280,7 +310,7 @@ proxy-groups:
     disable-udp: false
     proxies:
       - load-balance
-      - fallback
+      - url-test
 
 EOF
 
@@ -387,23 +417,25 @@ download_openclash(){
     echo "download $path/openclash$latest_version_openclash"
     mkdir $path/openclash$latest_version_openclash
     curl --retry 10 --retry-max-time 360 -H "Cache-Control: no-cache" -fsSL https://github.com/vernesong/OpenClash/releases/download/$latest_version_openclash/luci-app-openclash_`echo $latest_version_openclash | awk '{print substr($1,2)}'`_all.ipk -o $path/openclash$latest_version_openclash/luci-app-openclash_`echo $latest_version_openclash | awk '{print substr($1,2)}'`_all.ipk
-    /etc/init.d/openclash stop
-    opkg install $path/openclash$latest_version_openclash/luci-app-openclash_`echo $latest_version_openclash | awk '{print substr($1,2)}'`_all.ipk
-    echo "$latest_version_openclash" > /tmp/openclash_last_version
-    
-    begin_line=`awk '/^start_run_core()/{print NR; exit;}' /etc/init.d/openclash`
-    end_line=`awk 'NR>'$begin_line' && /^}/ {print NR; exit;}' /etc/init.d/openclash`
-    if [ "`awk 'NR=='$end_line'-2 {print $0}' /etc/init.d/openclash`" = "   uci -q set openclash.config.config_reload=1" ];then
-      sed -i ''$begin_line','$end_line' s/ulimit -v unlimited 2>\/dev\/null/ulimit -v `free -k | awk '"'NR==2{print \$2}'"'` 2>\/dev\/null/' /etc/init.d/openclash
-      sed -i 'N;'$end_line' i\   LOG_OUT "Step 4.1: clash_pid:\$clash_pid oom_score_adj:\$oom_score_adj_value"' /etc/init.d/openclash
-      sed -i 'N;'$end_line' i\   oom_score_adj_value=`cat /proc/\$clash_pid/oom_score_adj`' /etc/init.d/openclash
-      sed -i 'N;'$end_line' i\   echo "-1000" > /proc/\$clash_pid/oom_score_adj' /etc/init.d/openclash
-      sed -i 'N;'$end_line' i\   clash_pid=`ps |grep \$CLASH | grep nobody | grep -v '"'grep'"'  | awk '"'{print \$1}'"' | tr "\\n" " "|sed '"'s/.$//'"'`' /etc/init.d/openclash
-      awk 'NR>'$begin_line'&&NR<'$end_line'+5{print $0}' /etc/init.d/openclash
-    else
-      awk 'NR>'$begin_line'&&NR<'$end_line'+1{print $0}' /etc/init.d/openclash
+    if [ -f $path/openclash$latest_version_openclash/luci-app-openclash_`echo $latest_version_openclash | awk '{print substr($1,2)}'`_all.ipk ]; then
+      /etc/init.d/openclash stop
+      opkg install $path/openclash$latest_version_openclash/luci-app-openclash_`echo $latest_version_openclash | awk '{print substr($1,2)}'`_all.ipk
+      echo "$latest_version_openclash" > /tmp/openclash_last_version
+  
+      begin_line=`awk '/^start_run_core()/{print NR; exit;}' /etc/init.d/openclash`
+      end_line=`awk 'NR>'$begin_line' && /^}/ {print NR; exit;}' /etc/init.d/openclash`
+      if [ "`awk 'NR=='$end_line'-2 {print $0}' /etc/init.d/openclash`" = "   uci -q set openclash.config.config_reload=1" ];then
+        sed -i ''$begin_line','$end_line' s/ulimit -v unlimited 2>\/dev\/null/ulimit -v `free -k | awk '"'NR==2{print \$2 * 1.5}'"'` 2>\/dev\/null/' /etc/init.d/openclash
+        sed -i 'N;'$end_line' i\   LOG_OUT "Step 4.1: clash_pid:\$clash_pid oom_score_adj:\$oom_score_adj_value"' /etc/init.d/openclash
+        sed -i 'N;'$end_line' i\   oom_score_adj_value=`cat /proc/\$clash_pid/oom_score_adj`' /etc/init.d/openclash
+        sed -i 'N;'$end_line' i\   echo "-1000" > /proc/\$clash_pid/oom_score_adj' /etc/init.d/openclash
+        sed -i 'N;'$end_line' i\   clash_pid=`ps |grep \$CLASH | grep nobody | grep -v '"'grep'"'  | awk '"'{print \$1}'"' | tr "\\n" " "|sed '"'s/.$//'"'`' /etc/init.d/openclash
+        awk 'NR>'$begin_line'&&NR<'$end_line'+5{print $0}' /etc/init.d/openclash
+      else
+        awk 'NR>'$begin_line'&&NR<'$end_line'+1{print $0}' /etc/init.d/openclash
+      fi
+      /etc/init.d/openclash restart
     fi
-    /etc/init.d/openclash restart
   fi
 }
 
@@ -416,7 +448,11 @@ auto_clash_config_ip_by_CloudflareSpeedTest
 /etc/init.d/openclash restart
 download_openclash
 
-
-
-#0 17 * * * /bin/opkg update && /bin/opkg upgrade kmod-tcp-bbr `/bin/opkg list-upgradable | /usr/bin/awk '{print $1}'| /usr/bin/awk BEGIN{RS=EOF}'{gsub(/\n/," ");print}'` --force-overwrite
+#ulimit -v `free -k | awk 'NR==2{print $2 * 1.5 }'` 2>/dev/null
+#clash_pid=`ps |grep $CLASH | grep nobody | grep -v 'grep'  | awk '{print $1}' | tr "\\n" " "|sed 's/.$//'`
+#echo "-1000" > /proc/$clash_pid/oom_score_adj
+#oom_score_adj_value=`cat /proc/$clash_pid/oom_score_adj`
+#LOG_OUT "Step 4.1: clash_pid:$clash_pid oom_score_adj:$oom_score_adj_value"
+#ln -s /etc/openclash/config/config.yaml /www/config.yaml
+#0 17 * * * /bin/opkg update && /bin/opkg upgrade tar `/bin/opkg list-upgradable | /usr/bin/awk '{print $1}'| /usr/bin/awk BEGIN{RS=EOF}'{gsub(/\n/," ");print}'` --force-overwrite
 #0 22 * * * /root/openclash_auto_config/openclash_auto_config.sh > /root/openclash_auto_config/start.log 2>&1

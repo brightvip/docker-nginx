@@ -20,7 +20,7 @@ download_ip_scanner(){
  mkdir -p $path/ip_scanner
  curl --retry 10 --retry-max-time 360 -H "Cache-Control: no-cache" -fsSL https://codeload.github.com/ip-scanner/cloudflare/zip/refs/heads/daily -o $path/ip_scanner/cloudflare-daily.zip
  unzip -q $path/ip_scanner/cloudflare-daily.zip  -d $path/ip_scanner/
- find $path/ip_scanner/cloudflare-daily -name '*香港*.txt' -o -name '*新加坡*.txt' -o -name '*澳门*.txt' -o -name '*彰化*.txt' -o -name '*台中*.txt' -o -name '*东京*.txt' -print0| xargs -0 cat > $path/ip_scanner/ip_scanner.ip 
+ find $path/ip_scanner/cloudflare-daily -name '*香港*.txt' -o -name '*澳门*.txt' -o -name '*彰化*.txt' -o -name '*台中*.txt' -print0| xargs -0 cat > $path/ip_scanner/ip_scanner.ip 
  rm -fr $path/ip_scanner/cloudflare-daily/ $path/ip_scanner/cloudflare-daily.zip
 }
 
@@ -319,13 +319,13 @@ EOF
 
 
 auto_clash_config_ip_by_CloudflareSpeedTest(){
-    read -r -d '' clash_config_proxie <<- 'EOF'
+    read -r -d '' clash_config_proxie_ws <<- 'EOF'
 
   - name: "vmess-ws_%s"
     type: vmess
     server: %s
-    port: 
-    uuid: 
+    port: 443 
+    uuid: 27a588b7-f332-70d0-b93c-d096cb973090
     alterId: 0
     cipher: auto
     udp: true
@@ -340,11 +340,15 @@ auto_clash_config_ip_by_CloudflareSpeedTest(){
        #max-early-data: 1024
        #early-data-header-name: Sec-WebSocket-Protocol
 
+EOF
+
+    read -r -d '' clash_config_proxie_grpc <<- 'EOF'
+
   - name: vmess-grpc_%s
     server: %s
-    port: 
+    port: 443
     type: vmess
-    uuid: 
+    uuid: 27a588b7-f332-70d0-b93c-d096cb973090
     alterId: 0
     cipher: auto
     network: grpc
@@ -359,39 +363,57 @@ EOF
 
 
     if [ -f $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/CloudflareST ]; then
-      if [ -f $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/ipv6.txt ] && [ -f $path/ip_scanner/ip_scanner.ip ] ; then
-        sed -i '1r '"${path}"'/ip_scanner/ip_scanner.ip' $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/ipv6.txt
-        sed -i 's/\r//g' $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/ipv6.txt
+      
+      if [ -f $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/ipv6.txt ] ; then
+        ulimit -v `free -k | awk 'NR==2{print $2 * 2 }'` 2>/dev/null
+        $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/CloudflareST -httping  -f $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/ipv6.txt -o $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/result_ipv6.txt -t 2 -dn 5 -n 50
       fi
-      $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/CloudflareST -httping -f $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/ipv6.txt -o $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/result.txt -t 2 -dn 10 -n 100
+      if [ -f $path/ip_scanner/ip_scanner.ip ] ; then
+        ulimit -v `free -k | awk 'NR==2{print $2 * 2 }'` 2>/dev/null
+        $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/CloudflareST -httping  -f $path/ip_scanner/ip_scanner.ip -o $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/result_ipv4.txt -t 2 -dn 5 -n 50
+      fi
+      
     fi
     
-    ips=''
-    if [ -f $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/result.txt ]; then
-      ips=`cat $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/result.txt | awk  -F',' 'NR>1 {print $1}'`
+    ipv6=''
+    ipv4=''
+    if [ -f $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/result_ipv6.txt ] || [ -f $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/result_ipv4.txt ] ; then
+      if [ -f $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/result_ipv6.txt ] ; then
+        ipv6=`cat $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/result_ipv6.txt | awk  -F',' 'NR>1 {print $1}'`
+      fi
+      if [ -f $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/result_ipv4.txt ] ; then
+        ipv4=`cat $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/result_ipv4.txt | awk  -F',' 'NR>1 {print $1}'`
+      fi
     elif [ -f $path/ip_scanner/ip_scanner.ip ]; then
-      ips=`cat $path/ip_scanner/ip_scanner.ip`
+      ipv4=`cat $path/ip_scanner/ip_scanner.ip`
     else
-      ips='1.1.1.1'
+      ipv4='1.1.1.1'
     fi
     
 
     clash_config_proxie_ip=''
-    for ip in $ips
+    for ip in $ipv4
     do 
         clash_config_proxie_ip="$clash_config_proxie_ip
 
-  ${clash_config_proxie//%s/$ip}"
+  ${clash_config_proxie_ws//%s/$ip}"
     done
+    for ip in $ipv6
+    do 
+        clash_config_proxie_ip="$clash_config_proxie_ip
+
+  ${clash_config_proxie_grpc//%s/$ip}"
+    done
+    
 
 
     proxies_ip=''
-    for ip in $ips
+    for ip in $ipv4
     do 
         proxies_ip="$proxies_ip   - vmess-ws_$ip
     "
     done
-    for ip in $ips
+    for ip in $ipv6
     do 
         proxies_ip="$proxies_ip   - vmess-grpc_$ip
     "
@@ -420,12 +442,11 @@ download_openclash(){
     if [ -f $path/openclash$latest_version_openclash/luci-app-openclash_`echo $latest_version_openclash | awk '{print substr($1,2)}'`_all.ipk ]; then
       /etc/init.d/openclash stop
       opkg install $path/openclash$latest_version_openclash/luci-app-openclash_`echo $latest_version_openclash | awk '{print substr($1,2)}'`_all.ipk
-      echo "$latest_version_openclash" > /tmp/openclash_last_version
   
       begin_line=`awk '/^start_run_core()/{print NR; exit;}' /etc/init.d/openclash`
       end_line=`awk 'NR>'$begin_line' && /^}/ {print NR; exit;}' /etc/init.d/openclash`
       if [ "`awk 'NR=='$end_line'-2 {print $0}' /etc/init.d/openclash`" = "   uci -q set openclash.config.config_reload=1" ];then
-        sed -i ''$begin_line','$end_line' s/ulimit -v unlimited 2>\/dev\/null/ulimit -v `free -k | awk '"'NR==2{print \$2 * 1.5}'"'` 2>\/dev\/null/' /etc/init.d/openclash
+        sed -i ''$begin_line','$end_line' s/ulimit -v unlimited 2>\/dev\/null/ulimit -v `free -k | awk '"'NR==2{print \$2 * 1.3}'"'` 2>\/dev\/null/' /etc/init.d/openclash
         sed -i 'N;'$end_line' i\   LOG_OUT "Step 4.1: clash_pid:\$clash_pid oom_score_adj:\$oom_score_adj_value"' /etc/init.d/openclash
         sed -i 'N;'$end_line' i\   oom_score_adj_value=`cat /proc/\$clash_pid/oom_score_adj`' /etc/init.d/openclash
         sed -i 'N;'$end_line' i\   echo "-1000" > /proc/\$clash_pid/oom_score_adj' /etc/init.d/openclash
@@ -446,9 +467,9 @@ install_clash
 /etc/init.d/openclash stop
 auto_clash_config_ip_by_CloudflareSpeedTest
 /etc/init.d/openclash restart
-download_openclash
+#download_openclash
 
-#ulimit -v `free -k | awk 'NR==2{print $2 * 1.5 }'` 2>/dev/null
+#ulimit -v `free -k | awk 'NR==2{print $2 * 1.3 }'` 2>/dev/null
 #clash_pid=`ps |grep $CLASH | grep nobody | grep -v 'grep'  | awk '{print $1}' | tr "\\n" " "|sed 's/.$//'`
 #echo "-1000" > /proc/$clash_pid/oom_score_adj
 #oom_score_adj_value=`cat /proc/$clash_pid/oom_score_adj`

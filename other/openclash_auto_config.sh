@@ -20,7 +20,8 @@ download_ip_scanner(){
  mkdir -p $path/ip_scanner
  curl --retry 10 --retry-max-time 360 -H "Cache-Control: no-cache" -fsSL https://codeload.github.com/ip-scanner/cloudflare/zip/refs/heads/daily -o $path/ip_scanner/cloudflare-daily.zip
  unzip -q $path/ip_scanner/cloudflare-daily.zip  -d $path/ip_scanner/
- find $path/ip_scanner/cloudflare-daily -name '*香港*.txt' -o -name '*澳门*.txt' -o -name '*彰化*.txt' -o -name '*台中*.txt' -print0| xargs -0 cat > $path/ip_scanner/ip_scanner.ip 
+ for i in $path/ip_scanner/cloudflare-daily/*' '*; do mv "$i" `echo $i | sed -e 's/ /_/g'`; done
+ find $path/ip_scanner/cloudflare-daily -name '*香港*.txt' -o -name '*澳门*.txt' -o -name '*彰化*.txt' -o -name '*台中*.txt' | xargs cat > $path/ip_scanner/ip_scanner.ip
  rm -fr $path/ip_scanner/cloudflare-daily/ $path/ip_scanner/cloudflare-daily.zip
 }
 

@@ -107,11 +107,3 @@ jobs:
           path: |
             *.ipk
             PKG-INFO
-
-      - name: Store logs
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{env.ARCHIVE_NAME}}-logs
-          path: |
-            logs/
-            PKG-INFO

@@ -87,7 +87,7 @@ EOF
  cat /usr/app/lib/Xray/Xray.us >> /etc/nginx/conf.d/upstream.conf
  sed -e 's:path:'"${WSPATH}"':' -e 's/proxyPass/http:\/\/Xray/' /usr/app/lib/nginx/websocket_proxy.conf.template > /usr/app/lib/Xray/Xrayl.ws
  sed -i '35 r /usr/app/lib/Xray/Xrayl.ws' /etc/nginx/conf.d/default.conf
- sed -e 's/Xrayport/9300/'  -e 's/v2rayprotocol/vless/' -e 's/Xlisten/127.0.0.1/' -e 's:CLIENTSID:'"${CLIENTSID}"':'  -e 's:WSPATH:'"${WSPATH}"':' /usr/app/lib/Xray/configws.json.template > /usr/app/lib/Xray/Xrayl.ws.json
+ sed -e 's/Xrayport/9300/'  -e 's/Xrayprotocol/vless/' -e 's/Xlisten/127.0.0.1/' -e 's:CLIENTSID:'"${CLIENTSID}"':'  -e 's:WSPATH:'"${WSPATH}"':' /usr/app/lib/Xray/configws.json.template > /usr/app/lib/Xray/Xrayl.ws.json
 
 
  sed -e 's/serverName/Xraygun/' -e 's/serverPass/127.0.0.1:9302/' /usr/app/lib/nginx/upstream_server.conf.template > /usr/app/lib/Xray/Xraygun.us

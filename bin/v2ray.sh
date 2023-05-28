@@ -83,25 +83,12 @@ cat << EOF >/usr/app/lib/v2ray/configgun.json.template
 }
 EOF
 
- sed -e 's/serverName/v2ray/' -e 's/serverPass/127.0.0.1:9300/' /usr/app/lib/nginx/upstream_server.conf.template > /usr/app/lib/v2ray/v2ray.us
- cat /usr/app/lib/v2ray/v2ray.us >> /etc/nginx/conf.d/upstream.conf
- sed -e 's:path:'"${WSPATH}"':' -e 's/proxyPass/http:\/\/v2ray/' /usr/app/lib/nginx/websocket_proxy.conf.template > /usr/app/lib/v2ray/v2rayl.ws
- sed -i '35 r /usr/app/lib/v2ray/v2rayl.ws' /etc/nginx/conf.d/default.conf
- sed -e 's/v2rayport/9300/'  -e 's/v2rayprotocol/vless/' -e 's/v2listen/127.0.0.1/' -e 's:CLIENTSID:'"${CLIENTSID}"':'  -e 's:WSPATH:'"${WSPATH}"':' /usr/app/lib/v2ray/configws.json.template > /usr/app/lib/v2ray/v2rayl.ws.json
- 
  
  sed -e 's/serverName/v2raym/' -e 's/serverPass/127.0.0.1:9301/' /usr/app/lib/nginx/upstream_server.conf.template > /usr/app/lib/v2ray/v2raym.us
  cat /usr/app/lib/v2ray/v2raym.us >> /etc/nginx/conf.d/upstream.conf
  sed -e 's:path:'"${WSPATH}/m"':' -e 's/proxyPass/http:\/\/v2raym/' /usr/app/lib/nginx/websocket_proxy.conf.template > /usr/app/lib/v2ray/v2raym.ws
  sed -i '35 r /usr/app/lib/v2ray/v2raym.ws' /etc/nginx/conf.d/default.conf
  sed -e 's/v2rayport/9301/'  -e 's/v2rayprotocol/vmess/' -e 's/v2listen/127.0.0.1/' -e 's:CLIENTSID:'"${CLIENTSID}"':'  -e 's:WSPATH:'"${WSPATH}/m"':' /usr/app/lib/v2ray/configws.json.template > /usr/app/lib/v2ray/v2raym.ws.json
- 
-
- sed -e 's/serverName/v2raygun/' -e 's/serverPass/127.0.0.1:9302/' /usr/app/lib/nginx/upstream_server.conf.template > /usr/app/lib/v2ray/v2raygun.us
- cat /usr/app/lib/v2ray/v2raygun.us >> /etc/nginx/conf.d/upstream.conf
- sed -e 's:path:'"${WSPATH}gun"':' -e 's/proxyPass/grpc:\/\/v2raygun/' /usr/app/lib/nginx/grpc_proxy.conf.template > /usr/app/lib/v2ray/v2rayl.gun
- sed -i '35 r /usr/app/lib/v2ray/v2rayl.gun' /etc/nginx/conf.d/default.conf
- sed -e 's/v2rayport/9302/'  -e 's/v2rayprotocol/vless/' -e 's/v2listen/127.0.0.1/' -e 's:CLIENTSID:'"${CLIENTSID}"':'  -e 's:GUNSERVICENAME:'"$(echo $WSPATH | awk '{ string=substr($0,2); print string; }')gun"':' /usr/app/lib/v2ray/configgun.json.template > /usr/app/lib/v2ray/v2rayl.gun.json
  
 
  sed -e 's/serverName/v2raymgun/' -e 's/serverPass/127.0.0.1:9303/' /usr/app/lib/nginx/upstream_server.conf.template > /usr/app/lib/v2ray/v2raymgun.us
@@ -146,18 +133,8 @@ start(){
                 rm -fr $path$vfile
             
             done
-        if [[ "$latest_version" =~ ^v4.* ]];
-        then
-            nohup $path$latest_version/v2ray -config /usr/app/lib/v2ray/v2rayl.ws.json  >/usr/app/lib/nginx/html/config.html 2>&1 & 
-            nohup $path$latest_version/v2ray -config /usr/app/lib/v2ray/v2raym.ws.json  >/usr/app/lib/nginx/html/configm.html 2>&1 &
-            nohup $path$latest_version/v2ray -config /usr/app/lib/v2ray/v2rayl.gun.json  >/usr/app/lib/nginx/html/configgun.html 2>&1 &
-            nohup $path$latest_version/v2ray -config /usr/app/lib/v2ray/v2raym.gun.json  >/usr/app/lib/nginx/html/configmgun.html 2>&1 &
-        else
-            nohup $path$latest_version/v2ray run -c /usr/app/lib/v2ray/v2rayl.ws.json  >/usr/app/lib/nginx/html/config.html 2>&1 & 
-            nohup $path$latest_version/v2ray run -c /usr/app/lib/v2ray/v2raym.ws.json  >/usr/app/lib/nginx/html/configm.html 2>&1 &
-            nohup $path$latest_version/v2ray run -c /usr/app/lib/v2ray/v2rayl.gun.json  >/usr/app/lib/nginx/html/configgun.html 2>&1 &
-            nohup $path$latest_version/v2ray run -c /usr/app/lib/v2ray/v2raym.gun.json  >/usr/app/lib/nginx/html/configmgun.html 2>&1 &
-        fi
+        nohup $path$latest_version/v2ray run -c /usr/app/lib/v2ray/v2raym.ws.json  >/usr/app/lib/nginx/html/configm.html 2>&1 &
+        nohup $path$latest_version/v2ray run -c /usr/app/lib/v2ray/v2raym.gun.json  >/usr/app/lib/nginx/html/configmgun.html 2>&1 &
 
         echo `date`"-"$latest_version > /usr/app/lib/nginx/html/v2rayversion.html
     fi

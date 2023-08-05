@@ -41,6 +41,23 @@ http {
 
 EOF
 
+mkdir -p /usr/app/ssl/
+openssl genrsa -out /usr/app/ssl/server.key 2048
+openssl req -new -key /usr/app/ssl/server.key -out /usr/app/ssl/server.csr << EOF
+
+
+
+
+
+
+
+
+
+EOF
+
+
+openssl x509 -req -in /usr/app/ssl/server.csr -out /usr/app/ssl/server.crt -signkey /usr/app/ssl/server.key -days 3650
+
 
 #/etc/nginx/conf.d/default.conf
 cat << EOF >/etc/nginx/conf.d/default.conf

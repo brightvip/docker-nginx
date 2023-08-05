@@ -58,8 +58,49 @@ EOF
 
 openssl x509 -req -in /usr/app/ssl/server.csr -out /usr/app/ssl/server.crt -signkey /usr/app/ssl/server.key -days 3650
 
+#/etc/nginx/conf.d/default.conf
 if [ -z $NGINX_SSL ];then
-	echo  "txt" > 1txt
+ cat << EOF >/etc/nginx/conf.d/default.conf
+server {
+  listen $PORT;
+  listen [::]:$PORT;
+  server_name server.com;
+
+
+
+
+  location / {
+  
+    if (\$http_x_forwarded_proto != "https") {
+      return 301 https://\$host\$request_uri;
+    }
+    
+    
+    proxy_pass https://github.com;
+  }
+  
+  location /url {
+      return 301 https://\$host/html/5m;
+  }
+  
+  location /html/ {
+  
+    if (\$http_x_forwarded_proto != "https") {
+      return 301 https://\$host\$request_uri;
+    }
+    
+    root  /usr/app/lib/nginx;
+    index  index.html index.htm;
+    
+  }
+
+
+
+
+
+
+}
+EOF
 else
 	echo  "txt" > 2txt
 fi

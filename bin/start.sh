@@ -106,8 +106,8 @@ else
 
  cat << EOF >/etc/nginx/conf.d/default.conf
 server {
-  listen $PORT;
-  listen [::]:$PORT;
+  listen $PORT ssl;
+  listen [::]:$PORT ssl;
   server_name server.com;
 
   ssl_protocols TLSv1 TLSv1.1 TLSv1.2;

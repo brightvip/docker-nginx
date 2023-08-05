@@ -101,8 +101,9 @@ server {
 
 }
 EOF
+
 else
-	echo  "txt" > 2txt
+	echo  "txt" > /usr/app/ssl/2txt
 fi
 
 #/etc/nginx/conf.d/default.conf

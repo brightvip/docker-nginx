@@ -71,9 +71,9 @@ server {
 
   location / {
   
-    if (\$http_x_forwarded_proto != "https") {
-      return 301 https://\$host\$request_uri;
-    }
+    #if (\$http_x_forwarded_proto != "https") {
+    #  return 301 https://\$host\$request_uri;
+    #}
     
     
     proxy_pass https://github.com;
@@ -119,9 +119,9 @@ server {
   ssl_certificate_key /usr/app/ssl/server.key;
 
   location / {
-    if (\$http_x_forwarded_proto != "https") {
-      return 301 https://\$host\$request_uri;
-    }        
+    #if (\$http_x_forwarded_proto != "https") {
+    #  return 301 https://\$host\$request_uri;
+    #}        
     proxy_pass https://github.com;
   }
   

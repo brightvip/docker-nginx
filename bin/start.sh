@@ -148,48 +148,48 @@ EOF
 
 fi
 
-#/etc/nginx/conf.d/default.conf
-cat << EOF >/etc/nginx/conf.d/default.conf
-server {
-  listen $PORT;
-  listen [::]:$PORT;
-  server_name server.com;
+# #/etc/nginx/conf.d/default.conf
+# cat << EOF >/etc/nginx/conf.d/default.conf
+# server {
+#   listen $PORT;
+#   listen [::]:$PORT;
+#   server_name server.com;
 
 
 
 
-  location / {
+#   location / {
   
-    if (\$http_x_forwarded_proto != "https") {
-      return 301 https://\$host\$request_uri;
-    }
+#     if (\$http_x_forwarded_proto != "https") {
+#       return 301 https://\$host\$request_uri;
+#     }
     
     
-    proxy_pass https://github.com;
-  }
+#     proxy_pass https://github.com;
+#   }
   
-  location /url {
-      return 301 https://\$host/html/5m;
-  }
+#   location /url {
+#       return 301 https://\$host/html/5m;
+#   }
   
-  location /html/ {
+#   location /html/ {
   
-    if (\$http_x_forwarded_proto != "https") {
-      return 301 https://\$host\$request_uri;
-    }
+#     if (\$http_x_forwarded_proto != "https") {
+#       return 301 https://\$host\$request_uri;
+#     }
     
-    root  /usr/app/lib/nginx;
-    index  index.html index.htm;
+#     root  /usr/app/lib/nginx;
+#     index  index.html index.htm;
     
-  }
+#   }
 
 
 
 
 
 
-}
-EOF
+# }
+# EOF
 
 
 #/etc/nginx/conf.d/upstream.conf

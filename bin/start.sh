@@ -58,6 +58,11 @@ EOF
 
 openssl x509 -req -in /usr/app/ssl/server.csr -out /usr/app/ssl/server.crt -signkey /usr/app/ssl/server.key -days 3650
 
+if [ -z $NGINX_SSL ];then
+	echo  "txt" > 1txt
+else
+	echo  "txt" > 2txt
+fi
 
 #/etc/nginx/conf.d/default.conf
 cat << EOF >/etc/nginx/conf.d/default.conf

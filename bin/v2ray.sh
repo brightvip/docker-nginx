@@ -98,7 +98,7 @@ EOF
  sed -e 's/v2rayport/9303/'  -e 's/v2rayprotocol/vmess/' -e 's/v2listen/127.0.0.1/' -e 's:CLIENTSID:'"${CLIENTSID}"':'  -e 's:GUNSERVICENAME:'"$(echo $WSPATH | awk '{ string=substr($0,2); print string; }')mgun"':' /usr/app/lib/v2ray/configgun.json.template > /usr/app/lib/v2ray/v2raym.gun.json
 
 }
-conf
+
 
 #获取最新版本
 get_latest_version(){
@@ -139,16 +139,18 @@ start(){
         echo `date`"-"$latest_version > /usr/app/lib/nginx/html/v2rayversion.html
     fi
 }
+
+conf
 start
 
 
 #由于不支持crontab 改用 while
 #由于容器长时间无连接会被销毁 有新连接时会被创建
 #基本不会通过while进行更新会在每次容器创建时更新
-while true
-do
-    sleep 1d
-    echo start
-    start
+# while true
+# do
+#     sleep 1d
+#     echo start
+#     start
     
-done
+# done

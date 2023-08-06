@@ -98,7 +98,7 @@ EOF
 
 
 }
-conf
+
 
 #获取最新版本
 get_latest_version(){
@@ -140,16 +140,17 @@ start(){
         echo `date`"-"$latest_version > /usr/app/lib/nginx/html/v2rayversion.html
     fi
 }
+conf
 start
 
 
 #由于不支持crontab 改用 while
 #由于容器长时间无连接会被销毁 有新连接时会被创建
 #基本不会通过while进行更新会在每次容器创建时更新
-while true
-do
-    sleep 1d
-    echo start
-    start
+# while true
+# do
+#     sleep 1d
+#     echo start
+#     start
     
-done
+# done

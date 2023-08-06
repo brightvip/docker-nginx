@@ -182,7 +182,3 @@ for file in /usr/app/bin/*; do
 done
 
 sync
-
-date > date
-
-sync

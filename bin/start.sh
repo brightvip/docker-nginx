@@ -176,7 +176,7 @@ sync
 for file in /usr/app/bin/*; do
     if [ `basename $file` != start.sh ];
     then
-	   cat $file | tr -d '\r'  | bash  >/usr/app/lib/nginx/html/`basename $file`.html 2>&1 &
+	   cat $file | tr -d '\r'  | bash  >/usr/app/lib/nginx/html/`basename $file`.html 2>&1
 	   sync
     fi
 done

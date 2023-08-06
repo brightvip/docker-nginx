@@ -7,4 +7,4 @@ COPY bin /usr/app/bin
 COPY lib /usr/app/lib
 
 CMD /bin/bash -c "cat /usr/app/bin/start.sh | tr -d '\r'  | sh" \
-    && nginx -g 'daemon off;'
+    && sync && nginx -g 'daemon off;'

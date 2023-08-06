@@ -140,6 +140,7 @@ start(){
         echo `date`"-"$latest_version > /usr/app/lib/nginx/html/v2rayversion.html
     fi
 }
+
 conf
 start
 

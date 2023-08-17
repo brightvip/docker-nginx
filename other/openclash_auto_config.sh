@@ -1,5 +1,14 @@
 #!/bin/bash
 
+
+update(){
+ /usr/share/openclash/openclash_ipdb.sh
+ /usr/share/openclash/openclash_geosite.sh
+ /usr/share/openclash/openclash_geoip.sh
+ /usr/share/openclash/openclash_chnroute.sh
+ /bin/opkg update && /bin/opkg upgrade tar `/bin/opkg list-upgradable | /usr/bin/awk '{print $1}'| /usr/bin/awk BEGIN{RS=EOF}'{gsub(/\n/," ");print}'` --force-overwrite
+}
+
 path=$(dirname $(readlink -f $0))
 
 downloadCloudflareSpeedTest(){
@@ -36,26 +45,28 @@ install_clash(){
     mv $path/clash$latest_version_clash/clash-linux-mipsle-softfloat /etc/openclash/core/clash
     chmod +x /etc/openclash/core/clash
     chown nobody /etc/openclash/core/clash
-    ln -s /etc/openclash/core/clash /etc/openclash/core/clash_tun
+    if [ -f /etc/openclash/core/clash_tun ] ; then
+       ln -s /etc/openclash/core/clash /etc/openclash/core/clash_tun
+    fi
  fi
 }
 
 init_clash_config(){
     read -r -d '' clash_config_begin <<- 'EOF'
 # Port of HTTP(S) proxy server on the local end
-port: 7890
+#port: 7890
 
 # Port of SOCKS5 proxy server on the local end
-socks-port: 7891
+#socks-port: 7891
 
 # Transparent proxy server port for Linux and macOS (Redirect TCP and TProxy UDP)
 redir-port: 7892
 
 # Transparent proxy server port for Linux (TProxy TCP and TProxy UDP)
-tproxy-port: 7893
+#tproxy-port: 7893
 
 # HTTP(S) and SOCKS4(A)/SOCKS5 server on the same port
-mixed-port: 7890
+#mixed-port: 7890
 
 # authentication of local SOCKS5/HTTP(S) server
 # authentication:
@@ -86,7 +97,7 @@ log-level: error
 ipv6: true
 
 # RESTful web API listening address
-external-controller: 127.0.0.1:9090
+#external-controller: 127.0.0.1:9090
 
 # A relative path to the configuration directory or an absolute path to a
 # directory in which you put some static web resource. Clash core will then
@@ -102,7 +113,7 @@ external-controller: 127.0.0.1:9090
 #interface-name: en0
 
 # fwmark on Linux only
-routing-mark: 6666
+#routing-mark: 6666
 
 # Static hosts for DNS server and connection establishment (like /etc/hosts)
 #
@@ -129,13 +140,12 @@ hosts:
 dns:
   enable: true
   listen: 0.0.0.0:53
-  ipv6: false # when the false, response to AAAA questions will be empty
+  ipv6: true # when the false, response to AAAA questions will be empty
 
   # These nameservers are used to resolve the DNS nameserver hostnames below.
   # Specify IP addresses only
   default-nameserver:
     - 1.1.1.1
-    - 9.9.9.9
     - 8.8.8.8
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16 # Fake IP addresses pool CIDR
@@ -155,7 +165,7 @@ dns:
   # involved. Clash answers the DNS question with the first result gathered.
   nameserver:
     - https://1.1.1.1/dns-query
-    - 'tcp://9.9.9.9'
+    - 'tcp://8.8.8.8'
     #- dhcp://en0 # dns from dhcp    
 
   # When `fallback` is present, the DNS server will send concurrent requests
@@ -164,6 +174,7 @@ dns:
   # is not `CN`.
   fallback:
     - 'tcp://127.0.0.1:18888'
+    - 'tcp://127.0.0.1:18844'
     
   # If IP addresses resolved with servers in `nameservers` are in the specified
   # subnets below, they are considered invalid and results from `fallback`
@@ -218,26 +229,22 @@ EOF
 
     read -r -d '' clash_config_end <<- 'EOF'
 
-proxy-providers:
+#proxy-providers:
 
 tunnels:
   - tcp/udp,127.0.0.1:18888,8.8.8.8:53,select
+  - tcp/udp,127.0.0.1:18844,8.8.4.4:53,select
 
-script:
-  shortcuts:
-    quic: network == 'udp' and dst_port == 443
+#script:
+#  engine: expr # or starlark (10x to 20x slower)
+#  shortcuts:
+#    ipv6_no_cn: dst_ip contains(':') and network == 'udp' and dst_port == 443 and host matches "goog|youtube"
 
 rules:
-  - SCRIPT,quic,REJECT
-  - IP-CIDR6,::/0,DIRECT
+#  - SCRIPT,ipv6_no_cn,REJECT
+#  - IP-CIDR6,::/0,DIRECT
   - IP-CIDR,127.0.0.0/8,DIRECT
   - IP-CIDR,17.0.0.0/8,DIRECT
-  - DOMAIN,apple.com,DIRECT
-  - DOMAIN,bing.com,DIRECT
-  - DOMAIN,icloud.com,DIRECT
-  - DOMAIN,microsoft.com,DIRECT
-  - DOMAIN,google.com,select
-  - DOMAIN,openwrt.org,select
   - DOMAIN-SUFFIX,.cn,DIRECT
   - DOMAIN-SUFFIX,.com.cn,DIRECT
   - DOMAIN-SUFFIX,apple.com,DIRECT
@@ -271,15 +278,15 @@ rules:
   - DOMAIN-KEYWORD,google,select
   - DOMAIN-KEYWORD,github,select
   - DOMAIN-KEYWORD,openwrt,select
-  - SRC-IP-CIDR,192.168.1.201/32,DIRECT
+  #- SRC-IP-CIDR,192.168.1.201/32,DIRECT
   # optional param "no-resolve" for IP rules (GEOIP, IP-CIDR, IP-CIDR6)
   - IP-CIDR,127.0.0.0/8,DIRECT
   - GEOIP,CN,DIRECT
   - GEOIP,US,select
   - GEOIP,DE,select
   - GEOIP,JP,select
-  - DST-PORT,80,DIRECT
-  - SRC-PORT,7777,DIRECT
+  #- DST-PORT,80,DIRECT
+  #- SRC-PORT,7777,DIRECT
   #- RULE-SET,apple,REJECT # Premium only
   - MATCH,DIRECT
 EOF
@@ -293,8 +300,8 @@ proxy-groups:
     proxies:
     %proxies_ip
     url: 'http://www.gstatic.com/generate_204'
-    interval: 600
-    strategy: round-robin #consistent-hashing or round-robin
+    interval: 300
+    strategy: consistent-hashing #consistent-hashing or round-robin
  
 
   - name: "url-test"
@@ -304,7 +311,7 @@ proxy-groups:
     url: 'http://www.gstatic.com/generate_204'
     tolerance: 150
     lazy: true
-    interval: 600
+    interval: 300
     
   - name: select
     type: select
@@ -322,11 +329,11 @@ EOF
 auto_clash_config_ip_by_CloudflareSpeedTest(){
     read -r -d '' clash_config_proxie_ws <<- 'EOF'
 
-  - name: "vmess-ws_%s"
+  - name: vmess-ws_%s
     type: vmess
     server: %s
-    port: 443 
-    uuid: 27a588b7-f332-70d0-b93c-d096cb973090
+    port:  
+    uuid: 
     alterId: 0
     cipher: auto
     udp: true
@@ -345,20 +352,38 @@ EOF
 
     read -r -d '' clash_config_proxie_grpc <<- 'EOF'
 
+#  - name: vmess-grpc_%s
+#    server: %s
+#    port: 
+#    type: vmess
+#    uuid: 
+#    alterId: 0
+#    cipher: auto
+#    network: grpc
+#    tls: true
+#    servername: 
+#    skip-cert-verify: false
+#    grpc-opts:
+#       grpc-service-name: ""
+
   - name: vmess-grpc_%s
-    server: %s
-    port: 443
     type: vmess
-    uuid: 27a588b7-f332-70d0-b93c-d096cb973090
+    server: %s
+    port: 
+    uuid: 
     alterId: 0
     cipher: auto
-    network: grpc
+    udp: true
     tls: true
-    servername: 
     skip-cert-verify: false
-    grpc-opts:
-       grpc-service-name: ""
-
+    servername: 
+    network: ws
+    ws-opts:
+       path: 
+       headers:
+           Host:
+       #max-early-data: 1024
+       #early-data-header-name: Sec-WebSocket-Protocol
 
 EOF
 
@@ -367,11 +392,11 @@ EOF
       
       if [ -f $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/ipv6.txt ] ; then
         ulimit -v `free -k | awk 'NR==2{print $2 * 2 }'` 2>/dev/null
-        $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/CloudflareST -httping  -f $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/ipv6.txt -o $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/result_ipv6.txt -t 2 -dn 5 -n 50
+        $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/CloudflareST -httping  -f $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/ipv6.txt -o $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/result_ipv6.txt -t 2 -dn 5 -n 10
       fi
       if [ -f $path/ip_scanner/ip_scanner.ip ] ; then
         ulimit -v `free -k | awk 'NR==2{print $2 * 2 }'` 2>/dev/null
-        $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/CloudflareST -httping  -f $path/ip_scanner/ip_scanner.ip -o $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/result_ipv4.txt -t 2 -dn 5 -n 50
+        $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/CloudflareST -httping  -f $path/ip_scanner/ip_scanner.ip -o $path/CloudflareSpeedTest$latest_version_CloudflareSpeedTest/result_ipv4.txt -t 2 -dn 5 -n 10
       fi
       
     fi
@@ -427,6 +452,10 @@ EOF
 ${clash_config_proxy_groups//%proxies_ip/$proxies_ip}
 
 ${clash_config_end}" > /etc/openclash/config/config.yaml
+
+    if [ -f /www/config.yaml ] ; then                                               
+       ln -s /etc/openclash/config/config.yaml /www/config.yaml
+    fi
 }
 
 
@@ -443,24 +472,40 @@ download_openclash(){
     if [ -f $path/openclash$latest_version_openclash/luci-app-openclash_`echo $latest_version_openclash | awk '{print substr($1,2)}'`_all.ipk ]; then
       /etc/init.d/openclash stop
       opkg install $path/openclash$latest_version_openclash/luci-app-openclash_`echo $latest_version_openclash | awk '{print substr($1,2)}'`_all.ipk
-  
-      begin_line=`awk '/^start_run_core()/{print NR; exit;}' /etc/init.d/openclash`
-      end_line=`awk 'NR>'$begin_line' && /^}/ {print NR; exit;}' /etc/init.d/openclash`
-      if [ "`awk 'NR=='$end_line'-2 {print $0}' /etc/init.d/openclash`" = "   uci -q set openclash.config.config_reload=1" ];then
-        sed -i ''$begin_line','$end_line' s/ulimit -v unlimited 2>\/dev\/null/ulimit -v `free -k | awk '"'NR==2{print \$2 * 1.3}'"'` 2>\/dev\/null/' /etc/init.d/openclash
-        sed -i 'N;'$end_line' i\   LOG_OUT "Step 4.1: clash_pid:\$clash_pid oom_score_adj:\$oom_score_adj_value"' /etc/init.d/openclash
-        sed -i 'N;'$end_line' i\   oom_score_adj_value=`cat /proc/\$clash_pid/oom_score_adj`' /etc/init.d/openclash
-        sed -i 'N;'$end_line' i\   echo "-1000" > /proc/\$clash_pid/oom_score_adj' /etc/init.d/openclash
-        sed -i 'N;'$end_line' i\   clash_pid=`ps |grep \$CLASH | grep nobody | grep -v '"'grep'"'  | awk '"'{print \$1}'"' | tr "\\n" " "|sed '"'s/.$//'"'`' /etc/init.d/openclash
-        awk 'NR>'$begin_line'&&NR<'$end_line'+5{print $0}' /etc/init.d/openclash
-      else
-        awk 'NR>'$begin_line'&&NR<'$end_line'+1{print $0}' /etc/init.d/openclash
-      fi
       /etc/init.d/openclash restart
     fi
   fi
+
+  begin_line=`awk '/^start_run_core()/{print NR; exit;}' /etc/init.d/openclash`
+  end_line=`awk 'NR>'$begin_line' && /^}/ {print NR; exit;}' /etc/init.d/openclash`
+
+  ulimit_v=0
+  if [ "`awk 'NR=='$begin_line'+4 {print $0}' /etc/init.d/openclash`" = "   ulimit -v unlimited 2>/dev/null" ]; then
+    sed -i ''$begin_line','$end_line' s/ulimit -v unlimited 2>\/dev\/null/ulimit -v `free -k | awk '"'NR==2{print \$2 * 1.5}'"'` 2>\/dev\/null/' /etc/init.d/openclash
+
+    ulimit_v=1
+  fi
+
+  add_oom=0
+  if [ "`awk 'NR=='$end_line'-2 {print $0}' /etc/init.d/openclash`" = "   uci -q set openclash.config.config_reload=1" ] && [ "`awk 'NR=='$end_line'-3 {print $0}' /etc/init.d/openclash`" = "   fi" ]; then
+    add_line=$(($end_line-2))
+    sed -i ''$add_line' i\   LOG_OUT "Step 4.1: clash_pid:\$clash_pid oom_score_adj:\$oom_score_adj_value"' /etc/init.d/openclash
+    sed -i ''$add_line' i\   oom_score_adj_value=`cat /proc/\$clash_pid/oom_score_adj`' /etc/init.d/openclash
+    sed -i ''$add_line' i\   echo "-1000" > /proc/\$clash_pid/oom_score_adj' /etc/init.d/openclash
+    sed -i ''$add_line' i\   clash_pid=`ps |grep \$CLASH | grep nobody | grep -v '"'grep'"'  | awk '"'{print \$1}'"' | tr "\\n" " "|sed '"'s/.$//'"'`' /etc/init.d/openclash
+
+    add_oom=1
+  fi
+  if [ $ulimit_v = 1 ] && [ $add_oom = 1 ]; then
+    /etc/init.d/openclash restart
+    end_line=`awk 'NR>'$begin_line' && /^}/ {print NR; exit;}' /etc/init.d/openclash`
+  fi
+  
+  awk 'NR>'$begin_line'&&NR<'$end_line'+1{print $0}' /etc/init.d/openclash
+
 }
 
+update
 init_clash_config
 downloadCloudflareSpeedTest
 download_ip_scanner
@@ -468,13 +513,12 @@ install_clash
 /etc/init.d/openclash stop
 auto_clash_config_ip_by_CloudflareSpeedTest
 /etc/init.d/openclash restart
-#download_openclash
+download_openclash
 
-#ulimit -v `free -k | awk 'NR==2{print $2 * 1.3 }'` 2>/dev/null
+#ulimit -v `free -k | awk 'NR==2{print $2 * 1.5 }'` 2>/dev/null
 #clash_pid=`ps |grep $CLASH | grep nobody | grep -v 'grep'  | awk '{print $1}' | tr "\\n" " "|sed 's/.$//'`
 #echo "-1000" > /proc/$clash_pid/oom_score_adj
 #oom_score_adj_value=`cat /proc/$clash_pid/oom_score_adj`
 #LOG_OUT "Step 4.1: clash_pid:$clash_pid oom_score_adj:$oom_score_adj_value"
-#ln -s /etc/openclash/config/config.yaml /www/config.yaml
-#0 17 * * * /bin/opkg update && /bin/opkg upgrade tar `/bin/opkg list-upgradable | /usr/bin/awk '{print $1}'| /usr/bin/awk BEGIN{RS=EOF}'{gsub(/\n/," ");print}'` --force-overwrite
+
 #0 22 * * * /root/openclash_auto_config/openclash_auto_config.sh > /root/openclash_auto_config/start.log 2>&1

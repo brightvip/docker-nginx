@@ -110,7 +110,7 @@ start(){
     #获取最新版本
     get_latest_version
     #判断文件夹是否存在
-    if [ ! -d $path$latest_version ]; then
+    if [ -n "$latest_version" ] && [ ! -d $path$latest_version ]; then
         #下载地址
         download="https://github.com/v2fly/v2ray-core/releases/download/";
         file="/v2ray-linux-64.zip";

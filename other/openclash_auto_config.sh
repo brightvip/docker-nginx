@@ -276,7 +276,8 @@ rules:
   - DOMAIN-KEYWORD,google,select
   - DOMAIN-KEYWORD,github,select
   - DOMAIN-KEYWORD,openwrt,select
-  #- SRC-IP-Cal param "no-resolve" for IP rules (GEOIP, IP-CIDR, IP-CIDR6)
+  #- SRC-IP-CIDR,192.168.1.201/32,DIRECT
+  # optional param "no-resolve" for IP rules (GEOIP, IP-CIDR, IP-CIDR6)
   - IP-CIDR,127.0.0.0/8,DIRECT
   - GEOIP,CN,DIRECT
   - GEOIP,US,select
@@ -285,8 +286,7 @@ rules:
   #- DST-PORT,80,DIRECT
   #- SRC-PORT,7777,DIRECT
   #- RULE-SET,apple,REJECT # Premium only
-  - MATCH,DIRECTIDR,192.168.1.201/32,DIRECT
-  # option
+  - MATCH,DIRECT
 EOF
 
     read -r -d '' clash_config_proxy_groups <<- 'EOF'

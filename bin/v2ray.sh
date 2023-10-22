@@ -11,7 +11,7 @@ conf(){
 cat << EOF >/usr/app/lib/v2ray/configws.json.template
 {
   "log": {
-    "loglevel": "warning"
+    "loglevel": "error"
   },
   "inbounds": [
     {

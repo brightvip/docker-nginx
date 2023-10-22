@@ -11,7 +11,7 @@ conf(){
 cat << EOF >/usr/app/lib/Xray/configws.json.template
 {
   "log": {
-    "loglevel": "warning"
+    "loglevel": "error"
   },
   "inbounds": [
     {

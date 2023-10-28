@@ -54,9 +54,9 @@ server {
 
   location / {
   
-    #if (\$http_x_forwarded_proto != "https") {
-    #  return 301 https://\$host\$request_uri;
-    #}
+    if (\$http_x_forwarded_proto != "https") {
+      return 301 https://\$host\$request_uri;
+    }
     
     
     proxy_pass https://github.com;
@@ -68,9 +68,9 @@ server {
   
   location /html/ {
   
-    #if (\$http_x_forwarded_proto != "https") {
-    #  return 301 https://\$host\$request_uri;
-    #}
+    if (\$http_x_forwarded_proto != "https") {
+      return 301 https://\$host\$request_uri;
+    }
     
     root  /usr/app/lib/nginx;
     index  index.html index.htm;
@@ -102,9 +102,9 @@ EOF
 cat << EOF >/usr/app/lib/nginx/websocket_proxy.conf.template
   location path {
   
-    #if (\$http_x_forwarded_proto != "https") {
-    #   return 301 https://\$host\$request_uri;
-    #}
+    if (\$http_x_forwarded_proto != "https") {
+       return 301 https://\$host\$request_uri;
+    }
     proxy_buffering on;
     proxy_buffer_size 4k;
     proxy_buffers 8 4k;
@@ -121,6 +121,7 @@ cat << EOF >/usr/app/lib/nginx/websocket_proxy.conf.template
     proxy_set_header Connection \$connection_upgrade;
     proxy_set_header Host \$host;
     proxy_set_header X-Real-IP \$remote_addr;
+    proxy_set_header X-Forwarded-Proto \$scheme;
     proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
     proxy_socket_keepalive on;
     proxy_read_timeout 300s;
@@ -140,9 +141,9 @@ EOF
 #/usr/app/lib/nginx/grpc_proxy.conf.template
 cat << EOF >/usr/app/lib/nginx/grpc_proxy.conf.template
   location path {
-    #if (\$http_x_forwarded_proto != "https") {
-    #   return 301 https://\$host\$request_uri;
-    #}
+    if (\$http_x_forwarded_proto != "https") {
+       return 301 https://\$host\$request_uri;
+    }
 
     if (\$content_type !~ "application/grpc") {
         return 404;

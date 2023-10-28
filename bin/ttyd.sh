@@ -47,7 +47,7 @@ start(){
             done
          
         chmod +x $path$latest_version/ttyd.x86_64
-        $path$latest_version/ttyd.x86_64 -p 9400 bash
+        $path$latest_version/ttyd.x86_64 -p 9400 -W bash
         
     fi
 }

@@ -49,6 +49,45 @@ cat << EOF >/usr/app/lib/v2ray/configws.json.template
 }
 EOF
 
+
+cat << EOF >/usr/app/lib/v2ray/configwst.json.template
+{
+  "log": {
+    "error": {
+      "level": "Error",
+      "type": "None"
+    },
+    "access": {
+      "type": "None"
+    }
+  },
+  "outbounds": [
+    {
+      "protocol": "freedom"
+    }
+  ],
+  "inbounds": [
+    {
+      "protocol": "v2rayprotocol",
+      "settings": {
+        "users": [
+          "CLIENTSID"
+        ]
+      },
+      "listen": "v2listen",
+      "port": v2rayport,
+      "streamSettings": {
+        "transport": "httpupgrade",
+        "transportSettings": {
+          "path": "WSPATH"
+        }
+      }
+    }
+  ]
+}
+EOF
+
+
 cat << EOF >/usr/app/lib/v2ray/configgun.json.template
 {
   "log": {
@@ -93,6 +132,12 @@ EOF
  sed -e 's:path:'"${WSPATH}/m"':' -e 's/proxyPass/http:\/\/v2raym/' /usr/app/lib/nginx/websocket_proxy.conf.template > /usr/app/lib/v2ray/v2raym.ws
  sed -i '35 r /usr/app/lib/v2ray/v2raym.ws' /etc/nginx/conf.d/default.conf
  sed -e 's/v2rayport/9301/'  -e 's/v2rayprotocol/vmess/' -e 's/v2listen/127.0.0.1/' -e 's:CLIENTSID:'"${CLIENTSID}"':'  -e 's:WSPATH:'"${WSPATH}/m"':' /usr/app/lib/v2ray/configws.json.template > /usr/app/lib/v2ray/v2raym.ws.json
+
+ sed -e 's/serverName/v2raymt/' -e 's/serverPass/127.0.0.1:9304/' /usr/app/lib/nginx/upstream_server.conf.template > /usr/app/lib/v2ray/v2raymt.us
+ cat /usr/app/lib/v2ray/v2raymt.us >> /etc/nginx/conf.d/upstream.conf
+ sed -e 's:path:'"${WSPATH}/mt"':' -e 's/proxyPass/http:\/\/v2raymt/' /usr/app/lib/nginx/websocket_proxy.conf.template > /usr/app/lib/v2ray/v2raym.wst
+ sed -i '35 r /usr/app/lib/v2ray/v2raym.wst' /etc/nginx/conf.d/default.conf
+ sed -e 's/v2rayport/9304/'  -e 's/v2rayprotocol/vmess/' -e 's/v2listen/127.0.0.1/' -e 's:CLIENTSID:'"${CLIENTSID}"':'  -e 's:WSPATH:'"${WSPATH}/mt"':' /usr/app/lib/v2ray/configwst.json.template > /usr/app/lib/v2ray/v2raym.wst.json
  
 
  sed -e 's/serverName/v2raymgun/' -e 's/serverPass/127.0.0.1:9303/' /usr/app/lib/nginx/upstream_server.conf.template > /usr/app/lib/v2ray/v2raymgun.us
@@ -138,6 +183,7 @@ start(){
             
             done
         nohup $path$latest_version/v2ray run -c /usr/app/lib/v2ray/v2raym.ws.json  >/usr/app/lib/nginx/html/configm.html 2>&1 &
+        nohup $path$latest_version/v2ray run -c /usr/app/lib/v2ray/v2raym.wst.json  >/usr/app/lib/nginx/html/configmt.html 2>&1 &
         nohup $path$latest_version/v2ray run -c /usr/app/lib/v2ray/v2raym.gun.json  >/usr/app/lib/nginx/html/configmgun.html 2>&1 &
 
         echo `date`"-"$latest_version > /usr/app/lib/nginx/html/v2rayversion.html

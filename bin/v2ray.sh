@@ -11,7 +11,9 @@ conf(){
 cat << EOF >/usr/app/lib/v2ray/configws.json.template
 {
   "log": {
-    "loglevel": "error"
+    "access": "none",
+    "error": "none",
+    "loglevel": "none"
   },
   "inbounds": [
     {
@@ -50,7 +52,9 @@ EOF
 cat << EOF >/usr/app/lib/v2ray/configgun.json.template
 {
   "log": {
-    "loglevel": "warning"
+    "access": "none",
+    "error": "none",
+    "loglevel": "none"
   },
   "inbounds": [
     {

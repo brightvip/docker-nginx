@@ -183,7 +183,7 @@ start(){
             
             done
         nohup $path$latest_version/v2ray run -c /usr/app/lib/v2ray/v2raym.ws.json  >/usr/app/lib/nginx/html/configm.html 2>&1 &
-        nohup $path$latest_version/v2ray run -c /usr/app/lib/v2ray/v2raym.wst.json  >/usr/app/lib/nginx/html/configmt.html 2>&1 &
+        nohup $path$latest_version/v2ray run -c /usr/app/lib/v2ray/v2raym.wst.json -format jsonv5 >/usr/app/lib/nginx/html/configmt.html 2>&1 &
         nohup $path$latest_version/v2ray run -c /usr/app/lib/v2ray/v2raym.gun.json  >/usr/app/lib/nginx/html/configmgun.html 2>&1 &
 
         echo `date`"-"$latest_version > /usr/app/lib/nginx/html/v2rayversion.html

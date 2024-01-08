@@ -20,7 +20,7 @@ http {
   
   map \$http_upgrade \$connection_upgrade {
       default \$connection_upgrade;
-      'WebSocket' upgrade;
+      'WebSocket' Upgrade;
   }
   
   underscores_in_headers on;

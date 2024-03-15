@@ -49,7 +49,7 @@ cat << EOF >/usr/app/lib/Xray/configws.json.template
 }
 EOF
 
-cat << EOF >/usr/app/lib/Xray/configgun.json.template
+cat << EOF >/usr/app/lib/Xray/confighttpu.json.template
 {
   "log": {
     "access": "none",
@@ -71,10 +71,11 @@ cat << EOF >/usr/app/lib/Xray/configgun.json.template
         "decryption": "none"
       },
       "streamSettings": {
-        "network": "grpc",
+        "network": "httpupgrade",
         "security": "none",
-        "grpcSettings": {
-              "serviceName": "GUNSERVICENAME"
+        "httpupgradeSettings": {
+          "path": "WSPATH",
+          "acceptProxyProtocol": false
         }
       }
     }
@@ -94,12 +95,11 @@ EOF
  sed -e 's/Xrayport/9300/'  -e 's/Xrayprotocol/vless/' -e 's/Xlisten/127.0.0.1/' -e 's:CLIENTSID:'"${CLIENTSID}"':'  -e 's:WSPATH:'"${WSPATH}"':' /usr/app/lib/Xray/configws.json.template > /usr/app/lib/Xray/Xrayl.ws.json
 
 
- sed -e 's/serverName/Xraygun/' -e 's/serverPass/127.0.0.1:9302/' /usr/app/lib/nginx/upstream_server.conf.template > /usr/app/lib/Xray/Xraygun.us
- cat /usr/app/lib/Xray/Xraygun.us >> /etc/nginx/conf.d/upstream.conf
- sed -e 's:path:'"${WSPATH}gun"':' -e 's/proxyPass/grpc:\/\/Xraygun/' /usr/app/lib/nginx/grpc_proxy.conf.template > /usr/app/lib/Xray/Xrayl.gun
- sed -i '35 r /usr/app/lib/Xray/Xrayl.gun' /etc/nginx/conf.d/default.conf
- sed -e 's/Xrayport/9302/'  -e 's/Xrayprotocol/vless/' -e 's/Xlisten/127.0.0.1/' -e 's:CLIENTSID:'"${CLIENTSID}"':'  -e 's:GUNSERVICENAME:'"$(echo $WSPATH | awk '{ string=substr($0,2); print string; }')gun"':' /usr/app/lib/Xray/configgun.json.template > /usr/app/lib/Xray/Xrayl.gun.json
-
+ sed -e 's/serverName/Xrayhttpu/' -e 's/serverPass/127.0.0.1:9302/' /usr/app/lib/nginx/upstream_server.conf.template > /usr/app/lib/Xray/Xrayhttpu.us
+ cat /usr/app/lib/Xray/Xrayhttpu.us >> /etc/nginx/conf.d/upstream.conf
+ sed -e 's:path:'"${WSPATH}/httpu"':' -e 's/proxyPass/http:\/\/Xrayhttpu/' /usr/app/lib/nginx/websocket_proxy.conf.template > /usr/app/lib/Xray/Xraylhttpu.ws
+ sed -i '35 r /usr/app/lib/Xray/Xraylhttpu.ws' /etc/nginx/conf.d/default.conf
+ sed -e 's/Xrayport/9300/'  -e 's/Xrayprotocol/vless/' -e 's/Xlisten/127.0.0.1/' -e 's:CLIENTSID:'"${CLIENTSID}"':'  -e 's:WSPATH:'"${WSPATH}/httpu"':' /usr/app/lib/Xray/confighttpu.json.template > /usr/app/lib/Xray/Xrayl.httpu.json
 
 }
 conf
@@ -139,7 +139,7 @@ start(){
             done
 
         nohup $path$latest_version/xray run -c /usr/app/lib/Xray/Xrayl.ws.json  >/usr/app/lib/nginx/html/config.html 2>&1 & 
-        nohup $path$latest_version/xray run -c /usr/app/lib/Xray/Xrayl.gun.json  >/usr/app/lib/nginx/html/configgun.html 2>&1 &
+        nohup $path$latest_version/xray run -c /usr/app/lib/Xray/Xrayl.httpu.json  >/usr/app/lib/nginx/html/configgun.html 2>&1 &
 
         echo `date`"-"$latest_version > /usr/app/lib/nginx/html/v2rayversion.html
     fi

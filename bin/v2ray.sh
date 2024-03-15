@@ -96,9 +96,9 @@ EOF
 
  sed -e 's/serverName/v2raymhttpu/' -e 's/serverPass/127.0.0.1:9303/' /usr/app/lib/nginx/upstream_server.conf.template > /usr/app/lib/v2ray/v2raymhttpu.us
  cat /usr/app/lib/v2ray/v2raymhttpu.us >> /etc/nginx/conf.d/upstream.conf
- sed -e 's:path:'"${WSPATH}/mh"':' -e 's/proxyPass/http:\/\/v2raymh/' /usr/app/lib/nginx/websocket_proxy.conf.template > /usr/app/lib/v2ray/v2raymhttpu.ws
+ sed -e 's:path:'"${WSPATH}/mhttpu"':' -e 's/proxyPass/http:\/\/v2raymhttpu/' /usr/app/lib/nginx/websocket_proxy.conf.template > /usr/app/lib/v2ray/v2raymhttpu.ws
  sed -i '35 r /usr/app/lib/v2ray/v2raymhttpu.ws' /etc/nginx/conf.d/default.conf
- sed -e 's/v2rayport/9303/'  -e 's/v2rayprotocol/vmess/' -e 's/v2listen/127.0.0.1/' -e 's:CLIENTSID:'"${CLIENTSID}"':'  -e 's:WSPATH:'"${WSPATH}/mh"':' /usr/app/lib/v2ray/confighttpu.json.template > /usr/app/lib/v2ray/v2raym.httpu.json
+ sed -e 's/v2rayport/9303/'  -e 's/v2rayprotocol/vmess/' -e 's/v2listen/127.0.0.1/' -e 's:CLIENTSID:'"${CLIENTSID}"':'  -e 's:WSPATH:'"${WSPATH}/mhttpu"':' /usr/app/lib/v2ray/confighttpu.json.template > /usr/app/lib/v2ray/v2raym.httpu.json
  
 }
 conf

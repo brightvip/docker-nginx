@@ -138,35 +138,6 @@ cat << EOF >/usr/app/lib/nginx/websocket_proxy.conf.template
 EOF
 
 
-#/usr/app/lib/nginx/grpc_proxy.conf.template
-cat << EOF >/usr/app/lib/nginx/grpc_proxy.conf.template
-  location path {
-    if (\$http_x_forwarded_proto != "https") {
-       return 301 https://\$host\$request_uri;
-    }
-
-    if (\$content_type !~ "application/grpc") {
-        return 404;
-    }
-    
-    client_body_buffer_size 8k;
-    
-    client_body_timeout 300s;
-    client_max_body_size 0;
-    keepalive_timeout 300s;
-    send_timeout 300s;
-    grpc_connect_timeout 75s;
-    grpc_read_timeout 300s;
-    grpc_send_timeout 300s;
-    grpc_socket_keepalive on;
-    grpc_buffer_size 4k;
-    grpc_pass proxyPass;
-
-    sendfile       on;
-    tcp_nopush     on;
-    aio            on;
-  }
-EOF
 
 #truncate 5m
 truncate -s 5M /usr/app/lib/nginx/html/5m

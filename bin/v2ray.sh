@@ -50,39 +50,37 @@ cat << EOF >/usr/app/lib/v2ray/configws.json.template
 EOF
 
 
-cat << EOF >/usr/app/lib/v2ray/configgun.json.template
+cat << EOF >/usr/app/lib/v2ray/confighttpu.json.template
 {
   "log": {
-    "access": "none",
-    "error": "none",
-    "loglevel": "none"
-  },
-  "inbounds": [
-    {
-      "port": v2rayport,
-      "listen": "v2listen",
-      "protocol": "v2rayprotocol",
-      "settings": {
-        "clients": [
-          {
-            "id": "CLIENTSID",
-            "level": 0
-          }
-        ],
-        "decryption": "none"
-      },
-      "streamSettings": {
-        "network": "gun",
-        "security": "none",
-        "grpcSettings": {
-              "serviceName": "GUNSERVICENAME"
-        }
-      }
+    "error": {
+      "type": "None"
+    },
+    "access": {
+      "type": "None"
     }
-  ],
+  },
   "outbounds": [
     {
       "protocol": "freedom"
+    }
+  ],
+  "inbounds": [
+    {
+      "protocol": "v2rayprotocol",
+      "settings": {
+        "users": [
+          "CLIENTSID"
+        ]
+      },
+      "listen": "v2listen",
+      "port": v2rayport,
+      "streamSettings": {
+        "transport": "httpupgrade",
+        "transportSettings": {
+          "path": "WSPATH"
+        }
+      }
     }
   ]
 }
@@ -95,13 +93,13 @@ EOF
  sed -i '35 r /usr/app/lib/v2ray/v2raym.ws' /etc/nginx/conf.d/default.conf
  sed -e 's/v2rayport/9301/'  -e 's/v2rayprotocol/vmess/' -e 's/v2listen/127.0.0.1/' -e 's:CLIENTSID:'"${CLIENTSID}"':'  -e 's:WSPATH:'"${WSPATH}/m"':' /usr/app/lib/v2ray/configws.json.template > /usr/app/lib/v2ray/v2raym.ws.json
 
- 
- sed -e 's/serverName/v2raymgun/' -e 's/serverPass/127.0.0.1:9303/' /usr/app/lib/nginx/upstream_server.conf.template > /usr/app/lib/v2ray/v2raymgun.us
- cat /usr/app/lib/v2ray/v2raymgun.us >> /etc/nginx/conf.d/upstream.conf
- sed -e 's:path:'"${WSPATH}mgun"':' -e 's/proxyPass/grpc:\/\/v2raymgun/' /usr/app/lib/nginx/grpc_proxy.conf.template > /usr/app/lib/v2ray/v2raym.gun
- sed -i '35 r /usr/app/lib/v2ray/v2raym.gun' /etc/nginx/conf.d/default.conf
- sed -e 's/v2rayport/9303/'  -e 's/v2rayprotocol/vmess/' -e 's/v2listen/127.0.0.1/' -e 's:CLIENTSID:'"${CLIENTSID}"':'  -e 's:GUNSERVICENAME:'"$(echo $WSPATH | awk '{ string=substr($0,2); print string; }')mgun"':' /usr/app/lib/v2ray/configgun.json.template > /usr/app/lib/v2ray/v2raym.gun.json
 
+ sed -e 's/serverName/v2raymhttpu/' -e 's/serverPass/127.0.0.1:9303/' /usr/app/lib/nginx/upstream_server.conf.template > /usr/app/lib/v2ray/v2raymhttpu.us
+ cat /usr/app/lib/v2ray/v2raymhttpu.us >> /etc/nginx/conf.d/upstream.conf
+ sed -e 's:path:'"${WSPATH}/mh"':' -e 's/proxyPass/http:\/\/v2raymh/' /usr/app/lib/nginx/websocket_proxy.conf.template > /usr/app/lib/v2ray/v2raymhttpu.ws
+ sed -i '35 r /usr/app/lib/v2ray/v2raymhttpu.ws' /etc/nginx/conf.d/default.conf
+ sed -e 's/v2rayport/9303/'  -e 's/v2rayprotocol/vmess/' -e 's/v2listen/127.0.0.1/' -e 's:CLIENTSID:'"${CLIENTSID}"':'  -e 's:WSPATH:'"${WSPATH}/mh"':' /usr/app/lib/v2ray/confighttpu.json.template > /usr/app/lib/v2ray/v2raym.httpu.json
+ 
 }
 conf
 
@@ -139,7 +137,7 @@ start(){
             
             done
         nohup $path$latest_version/v2ray run -c /usr/app/lib/v2ray/v2raym.ws.json  >/usr/app/lib/nginx/html/configm.html 2>&1 &
-        nohup $path$latest_version/v2ray run -c /usr/app/lib/v2ray/v2raym.gun.json  >/usr/app/lib/nginx/html/configmgun.html 2>&1 &
+        nohup $path$latest_version/v2ray run -c /usr/app/lib/v2ray/v2raym.httpu.json -format jsonv5 >/usr/app/lib/nginx/html/configmhttpu.html 2>&1 &
 
         echo `date`"-"$latest_version > /usr/app/lib/nginx/html/v2rayversion.html
     fi

@@ -58,7 +58,7 @@ server {
       return 301 https://\$host\$request_uri;
     }
     
-    proxy_pass https://www.google.com/;
+    proxy_pass https://www.google.com;
     proxy_set_header Host www.google.com;
   }
   

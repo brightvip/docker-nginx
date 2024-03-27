@@ -48,7 +48,7 @@ server {
   listen $PORT;
   listen [::]:$PORT;
   server_name server.com;
-
+  error_log  /usr/app/lib/nginx/nerror.html;
 
 
 

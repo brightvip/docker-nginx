@@ -53,11 +53,11 @@ server {
 
 
   location / {
-  
     if (\$http_x_forwarded_proto != "https") {
       return 301 https://\$host\$request_uri;
     }
-    
+    proxy_connect_timeout 120;
+    proxy_read_timeout 86400;
     proxy_pass https://github.com;
     proxy_set_header Host github.com;
   }

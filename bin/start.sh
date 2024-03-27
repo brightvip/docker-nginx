@@ -58,7 +58,6 @@ server {
     }
     proxy_connect_timeout 120;
     proxy_read_timeout 86400;
-    proxy_pass_header Host;
     proxy_pass https://github.com;
   }
   

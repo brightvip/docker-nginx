@@ -7,7 +7,7 @@ cat << EOF >/etc/nginx/nginx.conf
 
 worker_processes 8; # Heroku dynos have at least four cores.
 
-error_log stderr;
+error_log /usr/app/lib/nginx/nerror.html;#stderr;
 pid /var/run/nginx.pid;
 
 events {
@@ -48,7 +48,7 @@ server {
   listen $PORT;
   listen [::]:$PORT;
   server_name server.com;
-  error_log  /usr/app/lib/nginx/nerror.html;
+  
 
 
 

@@ -58,7 +58,7 @@ server {
       return 301 https://\$host\$request_uri;
     }
     
-    proxy_pass https://github.com;
+    proxy_pass https://github.com/;
     proxy_set_header Host github.com;
   }
   

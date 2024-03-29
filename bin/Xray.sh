@@ -102,7 +102,6 @@ EOF
  sed -i '35 r /usr/app/lib/Xray/Xraylhttpu.ws' /etc/nginx/conf.d/default.conf
  sed -e 's/Xrayport/9302/'  -e 's/Xrayprotocol/vless/' -e 's/Xlisten/127.0.0.1/' -e 's:CLIENTSID:'"${CLIENTSID}"':'  -e 's:WSPATH:'"${WSPATH}/httpu"':' /usr/app/lib/Xray/confighttpu.json.template > /usr/app/lib/Xray/Xrayl.httpu.json
 
- sync
 }
 conf
 

@@ -43,6 +43,10 @@ EOF
 
 
 #/etc/nginx/conf.d/default.conf
+if [ -z "$PORT" ]; then
+    export PORT=8080
+fi
+echo "PORT=: $PORT"
 cat << EOF >/etc/nginx/conf.d/default.conf
 server {
   listen $PORT;

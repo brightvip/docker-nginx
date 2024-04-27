@@ -92,12 +92,27 @@ server {
 EOF
 else
  mkdir -p /usr/app/ssl/
- cat << EOF >/usr/app/ssl/server.crt
+  cat << EOF >/usr/app/ssl/server.crt
 $SSLCERTIFICATE
 EOF
+ sed -i 's/ /\n/g' /usr/app/ssl/server.crt
+ sed -i '1,2d' /usr/app/ssl/server.crt
+ sed -i '$d' /usr/app/ssl/server.crt
+ sed -i '$d' /usr/app/ssl/server.crt
+ sed -i '1i\-----BEGIN CERTIFICATE-----' /usr/app/ssl/server.key
+ sed -i '$a\-----END CERTIFICATE-----' /usr/app/ssl/server.key
+ 
  cat << EOF >/usr/app/ssl/server.key
 $SSLCERTIFICATEKEY
 EOF
+ sed -i 's/ /\n/g' /usr/app/ssl/server.key
+ sed -i '1,3d' /usr/app/ssl/server.key
+ sed -i '$d' /usr/app/ssl/server.key
+ sed -i '$d' /usr/app/ssl/server.key
+ sed -i '$d' /usr/app/ssl/server.key
+ sed -i '1i\-----BEGIN PRIVATE KEY-----' /usr/app/ssl/server.key
+ sed -i '$a\-----END PRIVATE KEY-----' /usr/app/ssl/server.key
+ 
  cat << EOF >/etc/nginx/conf.d/default.conf
 server {
   listen $PORT ssl;

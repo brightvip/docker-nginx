@@ -103,7 +103,6 @@ server {
   listen $PORT ssl;
   listen [::]:$PORT ssl;
   server_name $SERVERNAME;
-  ssl    on;
   ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
   ssl_ciphers ECDHE-RSA-AES256-SHA384:AES256-SHA256:RC4:HIGH:!MD5:!aNULL:!eNULL:!NULL:!DH:!EDH:!AESGCM;
   ssl_prefer_server_ciphers on;
@@ -111,6 +110,7 @@ server {
   ssl_session_timeout 60m;
   ssl_certificate /usr/app/ssl/server.crt;
   ssl_certificate_key /usr/app/ssl/server.key;
+  
   location / {
     if (\$http_x_forwarded_proto != "https") {
       return 301 https://\$host\$request_uri;

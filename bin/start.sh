@@ -91,6 +91,7 @@ server {
 }
 EOF
 else
+ mkdir -p /usr/app/ssl/
  cat << EOF >/usr/app/ssl/server.crt
 $SSLCERTIFICATE
 EOF

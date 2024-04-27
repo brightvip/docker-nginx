@@ -95,23 +95,38 @@ else
   cat << EOF >/usr/app/ssl/server.crt
 $SSLCERTIFICATE
 EOF
+ sync
  sed -i 's/ /\n/g' /usr/app/ssl/server.crt
+ sync
  sed -i '1,2d' /usr/app/ssl/server.crt
+ sync
  sed -i '$d' /usr/app/ssl/server.crt
+ sync
  sed -i '$d' /usr/app/ssl/server.crt
+ sync
  sed -i '1i\-----BEGIN CERTIFICATE-----' /usr/app/ssl/server.key
+ sync
  sed -i '$a\-----END CERTIFICATE-----' /usr/app/ssl/server.key
+ sync
  
  cat << EOF >/usr/app/ssl/server.key
 $SSLCERTIFICATEKEY
 EOF
+ sync
  sed -i 's/ /\n/g' /usr/app/ssl/server.key
+ sync
  sed -i '1,3d' /usr/app/ssl/server.key
+ sync
  sed -i '$d' /usr/app/ssl/server.key
+ sync
  sed -i '$d' /usr/app/ssl/server.key
+ sync
  sed -i '$d' /usr/app/ssl/server.key
+ sync
  sed -i '1i\-----BEGIN PRIVATE KEY-----' /usr/app/ssl/server.key
+ sync
  sed -i '$a\-----END PRIVATE KEY-----' /usr/app/ssl/server.key
+ sync
  
  cat << EOF >/etc/nginx/conf.d/default.conf
 server {

@@ -3,9 +3,16 @@
 
 mkdir -p /usr/app/lib/nginx/
 #/etc/nginx/nginx.conf
+if [ -z "$PROCESSOR" ]; then
+    PROCESSOR=`cat /proc/cpuinfo | grep processor | wc -l`
+    if [ $PROCESSOR -ge 8 ]; then
+        export PROCESSOR=8
+    fi
+fi
+echo "PROCESSOR=: $PROCESSOR"
 cat << EOF >/etc/nginx/nginx.conf
 
-worker_processes 8; # Heroku dynos have at least four cores.
+worker_processes $PROCESSOR;
 
 error_log stderr;
 pid /var/run/nginx.pid;

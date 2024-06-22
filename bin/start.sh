@@ -62,10 +62,13 @@ server {
     if (\$http_x_forwarded_proto != "https") {
       return 301 https://\$host\$request_uri;
     }
-    proxy_connect_timeout 120;
-    proxy_read_timeout 86400;
-    proxy_pass https://github.com;
-    proxy_set_header Host github.com;
+    
+    proxy_buffer_size          16k;
+    proxy_buffers              8 16k;
+    proxy_busy_buffers_size    32k;
+    proxy_connect_timeout 75s;
+    proxy_read_timeout 300s;
+    proxy_pass https://github.com;
   }
   
   location /url {
@@ -127,10 +130,12 @@ server {
       return 301 https://\$host\$request_uri;
     }
     
-    proxy_connect_timeout 120;
-    proxy_read_timeout 86400;
-    proxy_pass https://github.com;
-    proxy_set_header Host github.com;
+    proxy_buffer_size          16k;
+    proxy_buffers              8 16k;
+    proxy_busy_buffers_size    32k;
+    proxy_connect_timeout 75s;
+    proxy_read_timeout 300s;
+    proxy_pass https://github.com;
   }
   location /url {
   
@@ -176,12 +181,12 @@ cat << EOF >/usr/app/lib/nginx/websocket_proxy.conf.template
        return 301 https://\$host\$request_uri;
     }
     proxy_buffering on;
-    proxy_buffer_size 4k;
-    proxy_buffers 8 4k;
-    proxy_busy_buffers_size 8k;
+    proxy_buffer_size 16k;
+    proxy_buffers 8 16k;
+    proxy_busy_buffers_size 32k;
     proxy_max_temp_file_size 0;
 
-    client_body_buffer_size 8k;
+    client_body_buffer_size 32k;
     
     proxy_connect_timeout 75s;
     proxy_redirect off;

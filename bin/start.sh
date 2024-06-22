@@ -4,7 +4,7 @@
 mkdir -p /usr/app/lib/nginx/
 #/etc/nginx/nginx.conf
 if [ -z "$PROCESSOR" ]; then
-    PROCESSOR=`cat /proc/cpuinfo | grep processor | wc -l`
+    export PROCESSOR=`cat /proc/cpuinfo | grep processor | wc -l`
     if [ $PROCESSOR -ge 8 ]; then
         export PROCESSOR=8
     fi

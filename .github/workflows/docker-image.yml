@@ -22,7 +22,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag ${{ inputs.image_name }}:${{ inputs.image_tag }}
+      run: docker build . --file Dockerfile --tag ${{ inputs.docker_user }}/${{ inputs.image_name }}:${{ inputs.image_tag }}
     - name: login docker
       run: echo ${{ inputs.docker_password }} | docker login -u ${{ inputs.docker_user }} --password-stdin
     - name: Push the Docker image

@@ -24,6 +24,6 @@ jobs:
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag ${{ inputs.image_name }}:${{ inputs.image_tag }}
     - name: login docker
-      run: docker login -u=${{ inputs.docker_user }} -p=${{ inputs.docker_password }}
+      run: echo ${{ inputs.docker_password }} | docker login -u ${{ inputs.docker_user }} --password-stdin
     - name: Push the Docker image
       run: push ${{ inputs.docker_user }}/${{ inputs.image_name }}:${{ inputs.image_tag }}

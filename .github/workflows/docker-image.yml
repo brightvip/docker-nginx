@@ -26,4 +26,4 @@ jobs:
     - name: login docker
       run: echo ${{ inputs.docker_password }} | docker login -u ${{ inputs.docker_user }} --password-stdin
     - name: Push the Docker image
-      run: push ${{ inputs.docker_user }}/${{ inputs.image_name }}:${{ inputs.image_tag }}
+      run: docker push ${{ inputs.docker_user }}/${{ inputs.image_name }}:${{ inputs.image_tag }}

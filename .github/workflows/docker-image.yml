@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Docker Image Build And Push
 
 on:
   workflow_dispatch:
@@ -9,6 +9,12 @@ on:
       image_tag:
         required: true
         type: string
+      docker_user:
+        required: true
+        type: string
+      docker_password:
+        required: true
+        type: string
 
 jobs:
   build:
@@ -17,3 +23,7 @@ jobs:
     - uses: actions/checkout@v4
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag ${{ inputs.image_name }}:${{ inputs.image_tag }}
+    - name: login docker
+      run: docker login -u=${{ inputs.docker_user }} -p=${{ inputs.docker_password }}
+    - name: Push the Docker image
+      run: push ${{ inputs.docker_user }}/${{ inputs.image_name }}:${{ inputs.image_tag }}

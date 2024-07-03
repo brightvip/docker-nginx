@@ -34,8 +34,8 @@ jobs:
     - name: openwrt make download
       run: |
         cd openwrt
-        make download -j$(nproc)
+        make download
     - name: openwrt make
       run: |
         cd openwrt
-        make -j$(nproc)
+        make

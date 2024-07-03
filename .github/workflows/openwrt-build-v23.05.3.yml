@@ -1,14 +1,7 @@
-name: Openwrt Build
+name: Openwrt Build v23.05.3
 
 on:
   workflow_dispatch:
-    # inputs:
-    #   check_out:
-    #     required: true
-    #     type: string
-    #   config_http_path:
-    #     required: true
-    #     type: string
 
 jobs:
   build:
@@ -29,7 +22,7 @@ jobs:
         ./scripts/feeds install -a
     - name: openwrt config
       run: |
-        wget https://raw.githubusercontent.com/brightvip/docker-nginx/main/other/configcmcc3000m2 -O openwrt/.config
+        cp other/openwrt/v23.05.3/configcmcc3000m openwrt/.config
         cat openwrt/.config
     - name: openwrt make download
       run: |
@@ -37,6 +30,8 @@ jobs:
         make download -j$(nproc)
     - name: openwrt make
       run: |
+        cp other/openwrt/v23.05.3/999-issue-23621.patch feeds/packages/libs/libpfring/patches/999-issue-23621.patch
+        cat feeds/packages/libs/libpfring/patches/999-issue-23621.patch
         cd openwrt
         make -j$(nproc)
     - name: Store packages

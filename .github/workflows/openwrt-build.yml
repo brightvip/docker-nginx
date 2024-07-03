@@ -34,11 +34,11 @@ jobs:
     - name: openwrt make download
       run: |
         cd openwrt
-        make download -j$(nproc)
+        make download -j8
     - name: openwrt make
       run: |
         cd openwrt
-        make -j$(nproc)
+        make -j8
     - name: Store packages
       uses: actions/upload-artifact@v3
       with:

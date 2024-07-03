@@ -22,7 +22,7 @@ jobs:
         ./scripts/feeds install -a
     - name: openwrt config
       run: |
-        cp other/openwrt/v23.05.3/configcmcc3000m openwrt/.config
+        wget https://raw.githubusercontent.com/brightvip/docker-nginx/main/other/openwrt/v23.05.3/configcmcc3000m -O openwrt/.config
         cat openwrt/.config
     - name: openwrt make download
       run: |
@@ -30,7 +30,7 @@ jobs:
         make download -j$(nproc)
     - name: openwrt make
       run: |
-        cp other/openwrt/v23.05.3/999-issue-23621.patch feeds/packages/libs/libpfring/patches/999-issue-23621.patch
+        wget https://raw.githubusercontent.com/brightvip/docker-nginx/main/other/openwrt/v23.05.3/999-issue-23621.patch -O feeds/packages/libs/libpfring/patches/999-issue-23621.patch
         cat feeds/packages/libs/libpfring/patches/999-issue-23621.patch
         cd openwrt
         make -j$(nproc)

@@ -2,13 +2,13 @@ name: Openwrt Build
 
 on:
   workflow_dispatch:
-    inputs:
-      check_out:
-        required: true
-        type: string
-      config_http_path:
-        required: true
-        type: string
+    # inputs:
+    #   check_out:
+    #     required: true
+    #     type: string
+    #   config_http_path:
+    #     required: true
+    #     type: string
 
 jobs:
   build:
@@ -34,11 +34,11 @@ jobs:
     - name: openwrt make download
       run: |
         cd openwrt
-        make download
+        make download -j$(nproc) V=s
     - name: openwrt make
       run: |
         cd openwrt
-        make
+        make -j$(nproc) V=s
     - name: Store packages
       uses: actions/upload-artifact@v3
       with:

@@ -31,11 +31,11 @@ jobs:
       run: |
         wget https://raw.githubusercontent.com/brightvip/docker-nginx/main/other/configcmcc3000m -O openwrt/.config
         cat openwrt/.config
-    - name: Upload artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: my-artifact
-        path: ./openwrt/config
-    
-    # - name: Push the Docker image
-    #   run: docker push ${{ inputs.docker_user }}/${{ inputs.image_name }}:${{ inputs.image_tag }}
+    - name: openwrt make download
+      run: |
+        cd openwrt
+        make download -j$(nproc)
+    - name: openwrt make
+      run: |
+        cd openwrt
+        make -j$(nproc)

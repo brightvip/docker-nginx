@@ -29,13 +29,13 @@ jobs:
         ./scripts/feeds install -a
     - name: openwrt config
       run: |
-        wget https://downloads.openwrt.org/releases/23.05.3/targets/mediatek/filogic/config.buildinfo -O openwrt/.config
+        wget https://raw.githubusercontent.com/brightvip/docker-nginx/main/other/configcmcc3000m -O openwrt/.config
         cat openwrt/.config
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
         name: my-artifact
-        path: ./openwrt
+        path: ./openwrt/config
     
     # - name: Push the Docker image
     #   run: docker push ${{ inputs.docker_user }}/${{ inputs.image_name }}:${{ inputs.image_tag }}

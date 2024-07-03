@@ -29,7 +29,7 @@ jobs:
         ./scripts/feeds install -a
     - name: openwrt config
       run: |
-        wget https://raw.githubusercontent.com/brightvip/docker-nginx/main/other/configcmcc3000m -O openwrt/.config
+        wget https://raw.githubusercontent.com/brightvip/docker-nginx/main/other/configcmcc3000m2 -O openwrt/.config
         cat openwrt/.config
     - name: openwrt make download
       run: |

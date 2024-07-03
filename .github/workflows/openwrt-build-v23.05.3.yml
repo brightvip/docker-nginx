@@ -30,8 +30,8 @@ jobs:
         make download -j$(nproc)
     - name: openwrt make
       run: |
-        wget https://raw.githubusercontent.com/brightvip/docker-nginx/main/other/openwrt/v23.05.3/999-issue-23621.patch -O feeds/packages/libs/libpfring/patches/999-issue-23621.patch
-        cat feeds/packages/libs/libpfring/patches/999-issue-23621.patch
+        wget https://raw.githubusercontent.com/brightvip/docker-nginx/main/other/openwrt/v23.05.3/999-issue-23621.patch -O openwrt/feeds/packages/libs/libpfring/patches/999-issue-23621.patch
+        cat openwrt/feeds/packages/libs/libpfring/patches/999-issue-23621.patch
         cd openwrt
         make -j$(nproc)
     - name: Store packages

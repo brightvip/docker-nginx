@@ -21,5 +21,6 @@ jobs:
         git clone https://git.openwrt.org/openwrt/openwrt.git
         cd openwrt
         git checkout v23.05.3
+        git status
     # - name: Push the Docker image
     #   run: docker push ${{ inputs.docker_user }}/${{ inputs.image_name }}:${{ inputs.image_tag }}

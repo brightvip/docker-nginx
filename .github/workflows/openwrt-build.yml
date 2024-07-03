@@ -27,5 +27,9 @@ jobs:
         cd openwrt
         ./scripts/feeds update -a
         ./scripts/feeds install -a
+    - name: openwrt config
+      run: |
+        wget https://downloads.openwrt.org/releases/v23.05.3/targets/mediatek/filogic/config.buildinfo -O openwrt/.config
+        cat openwrt/.config
     # - name: Push the Docker image
     #   run: docker push ${{ inputs.docker_user }}/${{ inputs.image_name }}:${{ inputs.image_tag }}

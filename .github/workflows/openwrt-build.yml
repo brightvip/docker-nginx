@@ -39,3 +39,11 @@ jobs:
       run: |
         cd openwrt
         make
+    - name: Store packages
+      uses: actions/upload-artifact@v3
+      with:
+        name: packages
+        path: |
+          openwrt/bin/targets/*
+          openwrt/.config
+          

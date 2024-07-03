@@ -22,5 +22,10 @@ jobs:
         cd openwrt
         git checkout v23.05.3
         git status
+    - name: openwrt feeds
+      run: |
+        cd openwrt
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a
     # - name: Push the Docker image
     #   run: docker push ${{ inputs.docker_user }}/${{ inputs.image_name }}:${{ inputs.image_tag }}

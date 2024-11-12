@@ -58,7 +58,8 @@ echo "PORT=: $PORT"
 if [ -z "$NGINX_SSL" ];then
  cat << EOF >/etc/nginx/conf.d/default.conf
 server {
-  listen *:$PORT default_server;
+  listen $PORT default_server;
+  listen [::]:$PORT default_server;
 
   server_name "";
   
@@ -125,7 +126,8 @@ EOF
  
  cat << EOF >/etc/nginx/conf.d/default.conf
 server {
-  listen *:$PORT default_server ssl;
+  listen $PORT default_server ssl;
+  listen [::]:$PORT default_server ssl;
 
   server_name $SERVERNAME;
   ssl_certificate /usr/app/ssl/server.crt;

@@ -62,7 +62,7 @@ server {
   listen [::]:$PORT default_server;
 
   server_name "";
-  
+
 
 
 
@@ -70,13 +70,13 @@ server {
     if (\$http_x_forwarded_proto != "https") {
       return 301 https://\$host\$request_uri;
     }
-    
 
 
 
 
 
-    return 301 https://github.com$request_uri;
+
+    return 301 https://github.com$request_uri;
   }
   
   location /url {
@@ -138,13 +138,13 @@ server {
     if (\$http_x_forwarded_proto != "https") {
       return 301 https://\$host\$request_uri;
     }
-    
 
 
 
 
 
-    return 301 https://github.com$request_uri;
+
+    return 301 https://github.com$request_uri;
   }
   location /url {
   

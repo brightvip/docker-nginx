@@ -60,7 +60,6 @@ if [ -z "$NGINX_SSL" ];then
 server {
   listen $PORT default_server;
   listen [::]:$PORT default_server;
-
   server_name "";
 
 
@@ -128,7 +127,6 @@ EOF
 server {
   listen $PORT default_server ssl;
   listen [::]:$PORT default_server ssl;
-
   server_name $SERVERNAME;
   ssl_certificate /usr/app/ssl/server.crt;
   ssl_certificate_key /usr/app/ssl/server.key;

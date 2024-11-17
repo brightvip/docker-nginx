@@ -8,6 +8,44 @@ path='/usr/app/lib/v2ray/bin/'
 conf(){
  mkdir -p /usr/app/lib/v2ray/
  
+cat << EOF >/usr/app/lib/v2ray/configh2.json.template
+{
+  "log": {
+    "access": "none",
+    "error": "none",
+    "loglevel": "none"
+  },
+  "inbounds": [
+    {
+      "port": v2rayport,
+      "listen": "v2listen",
+      "protocol": "v2rayprotocol",
+      "settings": {
+        "clients": [
+          {
+            "id": "CLIENTSID",
+            "level": 0
+          }
+        ],
+        "decryption": "none"
+      },
+      "streamSettings": {
+        "network": "h2",
+        "security": "none",
+        "httpSettings": {
+          "path": "H2PATH"
+        }
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "protocol": "freedom"
+    }
+  ]
+}
+EOF
+
 cat << EOF >/usr/app/lib/v2ray/configws.json.template
 {
   "log": {
@@ -50,56 +88,39 @@ cat << EOF >/usr/app/lib/v2ray/configws.json.template
 EOF
 
 
-cat << EOF >/usr/app/lib/v2ray/confighttpu.json.template
-{
-  "log": {
-    "error": {
-      "type": "None"
-    },
-    "access": {
-      "type": "None"
-    }
-  },
-  "outbounds": [
-    {
-      "protocol": "freedom"
-    }
-  ],
-  "inbounds": [
-    {
-      "protocol": "v2rayprotocol",
-      "settings": {
-        "users": [
-          "CLIENTSID"
-        ]
-      },
-      "listen": "v2listen",
-      "port": v2rayport,
-      "streamSettings": {
-        "transport": "httpupgrade",
-        "transportSettings": {
-          "path": "WSPATH"
-        }
-      }
-    }
-  ]
-}
+
+cat << EOF >/usr/app/lib/v2ray/v2raym.h2.template
+	handle H2PATH {
+    		reverse_proxy v2listen:v2rayport {
+        		transport http {
+            		versions h2c
+        		}
+    		}
+	}
 EOF
 
- 
- sed -e 's/serverName/v2raym/' -e 's/serverPass/127.0.0.1:9301/' /usr/app/lib/nginx/upstream_server.conf.template > /usr/app/lib/v2ray/v2raym.us
- cat /usr/app/lib/v2ray/v2raym.us >> /etc/nginx/conf.d/upstream.conf
- sed -e 's:path:'"${WSPATH}/m"':' -e 's/proxyPass/http:\/\/v2raym/' /usr/app/lib/nginx/websocket_proxy.conf.template > /usr/app/lib/v2ray/v2raym.ws
- sed -i '35 r /usr/app/lib/v2ray/v2raym.ws' /etc/nginx/conf.d/default.conf
- sed -e 's/v2rayport/9301/'  -e 's/v2rayprotocol/vmess/' -e 's/v2listen/127.0.0.1/' -e 's:CLIENTSID:'"${CLIENTSID}"':'  -e 's:WSPATH:'"${WSPATH}/m"':' /usr/app/lib/v2ray/configws.json.template > /usr/app/lib/v2ray/v2raym.ws.json
+
+cat << EOF >/usr/app/lib/v2ray/v2raym.ws.template
+	handle WSPATH {
+    		@websocket {
+    			header Connection Upgrade
+    			header Upgrade websocket
+    		}
+    		reverse_proxy @websocket v2listen:v2rayport
+	}
+EOF
 
  sync
 
- sed -e 's/serverName/v2raymhttpu/' -e 's/serverPass/127.0.0.1:9303/' /usr/app/lib/nginx/upstream_server.conf.template > /usr/app/lib/v2ray/v2raymhttpu.us
- cat /usr/app/lib/v2ray/v2raymhttpu.us >> /etc/nginx/conf.d/upstream.conf
- sed -e 's:path:'"${WSPATH}/mhttpu"':' -e 's/proxyPass/http:\/\/v2raymhttpu/' /usr/app/lib/nginx/websocket_proxy.conf.template > /usr/app/lib/v2ray/v2raymhttpu.ws
- sed -i '35 r /usr/app/lib/v2ray/v2raymhttpu.ws' /etc/nginx/conf.d/default.conf
- sed -e 's/v2rayport/9303/'  -e 's/v2rayprotocol/vmess/' -e 's/v2listen/127.0.0.1/' -e 's:CLIENTSID:'"${CLIENTSID}"':'  -e 's:WSPATH:'"${WSPATH}/mhttpu"':' /usr/app/lib/v2ray/confighttpu.json.template > /usr/app/lib/v2ray/v2raym.httpu.json
+ sed -e 's/v2rayport/9301/' -e 's/v2listen/127.0.0.1/'  -e 's:H2PATH:'"${PREFIX_PATH}/h2m/*"':' /usr/app/lib/v2ray/v2raym.h2.template > /usr/app/lib/v2ray/v2raym.h2
+ sed -e 's/v2rayport/9301/'  -e 's/v2rayprotocol/vmess/' -e 's/v2listen/127.0.0.1/' -e 's:CLIENTSID:'"${CLIENTSID}"':'  -e 's:H2PATH:'"${PREFIX_PATH}/h2m/"':' /usr/app/lib/v2ray/configh2.json.template > /usr/app/lib/v2ray/v2raym.h2.json
+ sed -i '32 r /usr/app/lib/v2ray/v2raym.h2' /etc/caddy/Caddyfile
+
+ sed -e 's/v2rayport/9302/' -e 's/v2listen/127.0.0.1/'  -e 's:WSPATH:'"${PREFIX_PATH}/wsm/*"':' /usr/app/lib/v2ray/v2raym.ws.template > /usr/app/lib/v2ray/v2raym.ws
+ sed -e 's/v2rayport/9302/'  -e 's/v2rayprotocol/vmess/' -e 's/v2listen/127.0.0.1/' -e 's:CLIENTSID:'"${CLIENTSID}"':'  -e 's:WSPATH:'"${PREFIX_PATH}/wsm/"':' /usr/app/lib/v2ray/configws.json.template > /usr/app/lib/v2ray/v2raym.ws.json
+ sed -i '32 r /usr/app/lib/v2ray/v2raym.ws' /etc/caddy/Caddyfile
+
+ sync
  
 }
 conf
@@ -137,10 +158,10 @@ start(){
                 rm -fr $path$vfile
             
             done
-        nohup $path$latest_version/v2ray run -c /usr/app/lib/v2ray/v2raym.ws.json  >/usr/app/lib/nginx/html/configm.html 2>&1 &
-        nohup $path$latest_version/v2ray run -c /usr/app/lib/v2ray/v2raym.httpu.json -format jsonv5 >/usr/app/lib/nginx/html/configmhttpu.html 2>&1 &
+        nohup $path$latest_version/v2ray run -c /usr/app/lib/v2ray/v2raym.h2.json  >/usr/share/caddy/configmh2.html 2>&1 &
+	nohup $path$latest_version/v2ray run -c /usr/app/lib/v2ray/v2raym.ws.json  >/usr/share/caddy/configmws.html 2>&1 &
 
-        echo `date`"-"$latest_version > /usr/app/lib/nginx/html/v2rayversion.html
+        echo `date`"-"$latest_version > /usr/share/caddy/v2rayversion.html
     fi
 }
 start

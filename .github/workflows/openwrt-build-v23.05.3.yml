@@ -15,6 +15,7 @@ jobs:
         cd openwrt
         git checkout v23.05.3
         git status
+        pwd
     - name: openwrt feeds
       run: |
         cd openwrt

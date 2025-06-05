@@ -11,4 +11,6 @@ jobs:
     - name: openwrt config
       run: |
         pwd
+        ls
+        cat other/openwrt/v23.05.3/configcmcc3000m
           

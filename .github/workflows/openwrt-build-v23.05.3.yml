@@ -24,7 +24,7 @@ jobs:
     - uses: actions/checkout@v4
     - name: openwrt config
       run: |
-        ls
+        pwd
         mv  other/openwrt/v23.05.3/configcmcc3000m openwrt/.config
         cat openwrt/.config
     - name: openwrt make download

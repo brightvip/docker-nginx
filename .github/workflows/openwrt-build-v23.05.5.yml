@@ -1,4 +1,4 @@
-name: Openwrt Build v23.05.3
+name: Openwrt Build v23.05.5
 
 on:
   workflow_dispatch:
@@ -13,16 +13,17 @@ jobs:
       run: |
         git clone https://git.openwrt.org/openwrt/openwrt.git
         cd openwrt
-        git checkout v23.05.3
+        git checkout v23.05.5
         git status
     - name: openwrt feeds
       run: |
         cd openwrt
         ./scripts/feeds update -a
         ./scripts/feeds install -a
+    - uses: actions/checkout@v4
     - name: openwrt config
       run: |
-        wget https://raw.githubusercontent.com/brightvip/docker-nginx/main/other/openwrt/v23.05.3/configcmcc3000m -O openwrt/.config
+        mv  other/openwrt/v23.05.5/configcmcc3000m openwrt/.config
         cat openwrt/.config
     - name: openwrt make download
       run: |
@@ -30,7 +31,7 @@ jobs:
         make download -j$(nproc)
     - name: openwrt make
       run: |
-        wget https://raw.githubusercontent.com/brightvip/docker-nginx/main/other/openwrt/v23.05.3/999-issue-23621.patch -O openwrt/feeds/packages/libs/libpfring/patches/999-issue-23621.patch
+        mv  other/openwrt/v23.05.5/999-issue-23621.patch openwrt/feeds/packages/libs/libpfring/patches/999-issue-23621.patch
         cat openwrt/feeds/packages/libs/libpfring/patches/999-issue-23621.patch
         cd openwrt
         make -j$(nproc)

@@ -19,10 +19,13 @@ jobs:
         ./scripts/feeds update -a
         ./scripts/feeds install -a
         make defconfig
+        ./scripts/config set CONFIG_TARGET_mediatek_filogic_DEVICE_cmcc_rax3000m=y
+        make defconfig        
         cat .config
+        cp .config config.tmp
     - name: Store packages
       uses: actions/upload-artifact@v4
       with:
         name: packages
         path: |
-          openwrt/
+          openwrt/config.tmp
